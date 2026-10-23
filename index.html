@@ -1,1127 +1,1112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Fuel Gas BurnRate Calculator</title>
-<style>
-* { box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif; }
-body {
-  background: linear-gradient(145deg, #d4e2ef 0%, #c0d4e6 100%);
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-}
-.calculator {
-  max-width: 1500px;
-  width: 100%;
-  background: #ffffffef;
-  border-radius: 48px 48px 36px 36px;
-  box-shadow: 0 25px 45px rgba(0, 25, 50, 0.35);
-  overflow: hidden;
-  border: 1px solid rgba(140, 180, 210, 0.6);
-}
-.header {
-  background: linear-gradient(95deg, #00243d 0%, #003f5e 100%);
-  color: white;
-  padding: 20px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-.header h1 { margin: 0; font-weight: 500; font-size: 1.9rem; letter-spacing: -0.3px; }
-.header h1 small { font-size: 0.9rem; color: #b9defa; margin-left: 15px; font-weight: 400; }
-.header p { margin: 5px 0 0; opacity: 0.85; }
-.header-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.lang-select {
-  background: #ffffff22;
-  color: white;
-  border: 1px solid #ffffff55;
-  border-radius: 40px;
-  padding: 10px 16px;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-.lang-select option { color: #00243d; background: white; }
-.pdf-btn {
-  background: #1b836c;
-  border: none;
-  border-radius: 60px;
-  padding: 12px 28px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.pdf-btn:hover { background: #0f9c7e; transform: scale(1.02); }
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 28px;
-  padding: 32px;
-  background: #f1f7fd;
-}
-.card {
-  background: white;
-  border-radius: 32px;
-  padding: 20px 26px;
-  box-shadow: 0 8px 18px rgba(0, 35, 65, 0.08);
-  border: 1px solid #d4e2ef;
-  transition: 0.2s;
-}
-.card:hover { border-color: #47b5d6; box-shadow: 0 14px 24px rgba(0, 70, 110, 0.12); }
-.card h2 {
-  margin: 0 0 18px 0;
-  font-size: 1.55rem;
-  color: #003653;
-  border-left: 8px solid #00a6c4;
-  padding-left: 20px;
-  font-weight: 500;
-}
-.card h2 .sub { font-size: 0.8rem; font-weight: 400; color: #1f6c93; }
-.input-group {
-  margin-bottom: 18px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-.input-group label { width: 180px; font-weight: 600; color: #1a4f6e; font-size: 0.92rem; }
-.input-group input, .input-group select {
-  flex: 1 1 200px;
-  padding: 10px 16px;
-  border: 1px solid #c2d6e8;
-  border-radius: 44px;
-  font-size: 0.95rem;
-  background: #fefefe;
-  transition: 0.15s;
-  font-family: inherit;
-}
-.input-group input:focus, .input-group select:focus {
-  outline: none;
-  border-color: #008bbd;
-  box-shadow: 0 0 0 3px rgba(0, 139, 189, 0.2);
-}
-.unit { width: 55px; color: #1f6c93; font-weight: 500; }
-.result {
-  background: #e6f2fa;
-  border-radius: 50px;
-  padding: 12px 22px;
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  border: 1px solid #bfd9ec;
-}
-.result span:first-child { font-weight: 700; color: #003652; font-size: 1.1rem; }
-.result .value {
-  font-family: 'Courier New', monospace;
-  font-weight: 800;
-  font-size: 1.8rem;
-  color: #002b44;
-  background: white;
-  padding: 4px 28px;
-  border-radius: 56px;
-  border: 1px solid #80b7d4;
-}
-.radio-group {
-  display: flex;
-  gap: 28px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin: 12px 0 16px 0;
-  background: #f4fafd;
-  padding: 8px 15px;
-  border-radius: 48px;
-}
-.radio-group div { display: flex; align-items: center; gap: 8px; }
-.note {
-  background: #fff6e5;
-  border-left: 5px solid #f3b33d;
-  padding: 10px 18px;
-  border-radius: 24px;
-  margin: 18px 0 0;
-  font-size: 0.85rem;
-  color: #2f4858;
-}
-.footer {
-  background: #cfe1ef;
-  padding: 15px 28px;
-  text-align: center;
-  color: #123e59;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-.mw-footer {
-  background: linear-gradient(95deg, #00243d 0%, #003f5e 100%);
-  color: #d8e9f5;
-  padding: 24px 28px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.mw-made {
-  font-size: 0.82rem;
-  color: #9fc4dc;
-  background: rgba(255,255,255,0.08);
-  padding: 5px 14px;
-  border-radius: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  letter-spacing: 0.3px;
-}
-.mw-made .spark { color: #6fd4c8; }
-.mw-whale {
-  width: 56px;
-  height: 56px;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-  transition: transform 0.3s ease;
-  margin-top: 4px;
-}
-.mw-whale:hover { transform: translateY(-4px) rotate(-6deg); }
-.mw-mail {
-  color: #d8e9f5;
-  text-decoration: none;
-  font-size: 0.92rem;
-  font-weight: 500;
-  border-bottom: 1px dotted #6fd4c8;
-  padding-bottom: 2px;
-  transition: color 0.2s;
-  margin-top: 2px;
-}
-.mw-mail:hover { color: #6fd4c8; }
-.mw-copy { font-size: 0.7rem; color: #7fa5bd; margin-top: 6px; }
-.fullhours-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-.fullhours-table th { background: #003f5e; color: white; padding: 12px 10px; font-weight: 600; text-align: left; }
-.fullhours-table td { padding: 10px 12px; border-bottom: 1px solid #d4e2ef; background: #fefefe; }
-.fullhours-table tr:hover td { background: #eef4fc; }
-.fullhours-table .range-badge {
-  font-family: monospace;
-  font-weight: 700;
-  color: #0077aa;
-  background: #e3f0f8;
-  padding: 4px 12px;
-  border-radius: 30px;
-  display: inline-block;
-}
-@media (max-width: 880px) {
-  .tool-grid { grid-template-columns: 1fr; }
-  .card h2 { font-size: 1.4rem; }
-  .input-group label { width: 100%; }
-}
-button.action-btn {
-  background: #1f7191;
-  color: white;
-  border: none;
-  border-radius: 40px;
-  padding: 10px 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-  flex: 1;
-  font-family: inherit;
-}
-button.action-btn:hover { background: #0a5d7c; transform: scale(0.98); }
-.inline-buttons { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
-.sample-bar {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  background: rgba(255,255,240,0.95);
-  backdrop-filter: blur(8px);
-  border-radius: 48px;
-  padding: 6px 20px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-  font-size: 0.8rem;
-  display: flex;
-  gap: 12px;
-  z-index: 1000;
-  border: 1px solid #bcd4e6;
-  flex-wrap: wrap;
-}
-.sample-bar span { font-weight: 600; }
-.sample-bar button {
-  background: #2c7da0;
-  border: none;
-  border-radius: 30px;
-  padding: 4px 12px;
-  color: white;
-  cursor: pointer;
-  font-family: inherit;
-}
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fuel Wizard">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 
-/* ===== RENEWABLE ADVISOR ===== */
-.card.renewable { grid-column: span 2; }
-.renew-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-@media (max-width: 880px) { .renew-grid { grid-template-columns: 1fr; } }
-.renew-box { background: #f4fafd; border: 1px solid #d4e2ef; border-radius: 24px; padding: 16px 18px; }
-.renew-box h3 { margin: 0 0 12px; font-size: 1.05rem; color: #003653; font-weight: 600; }
-.renew-box .input-group label { width: 160px; }
-.renew-result {
-  background: linear-gradient(135deg, #e6f7f2 0%, #d9f0fa 100%);
-  border: 1px solid #9fd6c8;
-  border-radius: 28px;
-  padding: 16px 22px;
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: center;
-  justify-content: space-between;
-}
-.renew-result .big {
-  font-family: 'Courier New', monospace;
-  font-weight: 800;
-  font-size: 1.8rem;
-  color: #00574a;
-  background: white;
-  padding: 6px 22px;
-  border-radius: 40px;
-  border: 1px solid #7cc9b8;
-}
-.renew-result .sub-label { color: #1a4f6e; font-weight: 600; font-size: 0.9rem; }
-.advice-list { list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 8px; }
-.advice-list li {
-  background: white;
-  border-left: 5px solid #1f9e7e;
-  border-radius: 16px;
-  padding: 10px 14px;
-  font-size: 0.88rem;
-  color: #234b5e;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-}
-.advice-list li strong { color: #00574a; }
-.renew-table { width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 18px; overflow: hidden; }
-.renew-table th { background: #00574a; color: white; padding: 9px 10px; font-size: 0.85rem; text-align: left; }
-.renew-table td { padding: 8px 10px; font-size: 0.85rem; border-bottom: 1px solid #d4e2ef; background: #fefefe; }
-.renew-table tr:hover td { background: #eef9f5; }
-.renew-table .badge-ok { background: #d9f5ea; color: #006e54; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
-.renew-note {
-  background: #eef7ff;
-  border-left: 5px solid #3a8dc4;
-  padding: 10px 16px;
-  border-radius: 20px;
-  margin-top: 14px;
-  font-size: 0.82rem;
-  color: #234b5e;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gas Combustion Tool + m³ → kW + CO₂ Equivalent</title>
+<style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+    body {
+        background: #e0eef7; margin: 0; min-height: 100vh;
+        padding: 20px; display: block; /* Flexbox verwijderd om afkappen te voorkomen */
+    }
+    .calculator {
+        max-width: 1400px; width: 100%; background: white;
+        border-radius: 40px 40px 30px 30px;
+        box-shadow: 0 20px 40px rgba(0,20,40,0.3);
+        border: 1px solid #b0c4d9;
+        margin: 0 auto; /* Centreert de calculator */
+        display: flex; flex-direction: column;
+    }
+    .header {
+        background: #002b4a; color: white; padding: 25px 30px;
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        border-radius: 40px 40px 0 0;
+    }
+    .header h1 { margin: 0; font-weight: 400; font-size: 2rem; letter-spacing: 1px; }
+    .header h1 small { font-size: 1rem; color: #a0c6e9; margin-left: 20px; }
+    .header .subtitle { margin: 6px 0 0; color: #a0c6e9; font-size: 0.95rem; }
+    .header-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    .lang-select {
+        background: #ffffff; color: #002b4a; border: none; border-radius: 60px;
+        padding: 12px 22px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .pdf-btn {
+        background: #1e6f5c; color: white; border: none; border-radius: 60px;
+        padding: 14px 28px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.2s;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .pdf-btn:hover { background: #0d8a73; transform: scale(1.02); }
+    
+    /* Verbeterde grid lay-out die zich automatisch aanpast */
+    .tool-grid {
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+        gap: 25px; padding: 30px; background: #f0f7fc;
+    }
+    .card {
+        background: white; border-radius: 28px; padding: 22px 25px;
+        box-shadow: 0 10px 18px rgba(0,40,70,0.1);
+        border: 1px solid #cbdae6; transition: 0.1s;
+        min-width: 0; /* Voorkomt overflow in grid */
+    }
+    .card:hover { border-color: #0099cc; box-shadow: 0 15px 25px rgba(0,80,130,0.15); }
+    .card h2 {
+        margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; color: #003b5c;
+        border-left: 10px solid #0099cc; padding-left: 18px; font-weight: 400;
+        word-wrap: break-word;
+    }
+    .card h2 i { font-weight: 300; color: #2c7aa0; font-size: 0.95rem; margin-left: 12px; display: block; }
+    
+    .input-group {
+        margin-bottom: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    }
+    .input-group label { 
+        flex: 0 0 180px; /* Flexibelere breedte */
+        font-weight: 600; color: #1d4e6f; font-size: 0.95rem; 
+    }
+    .input-group input, .input-group select {
+        flex: 1 1 100px; min-width: 0; padding: 10px 14px; border: 1px solid #b8ccdd;
+        border-radius: 40px; font-size: 1rem; background: #f9fdfe; transition: 0.15s;
+    }
+    .input-group input:focus, .input-group select:focus {
+        outline: none; border-color: #0077aa; box-shadow: 0 0 0 3px rgba(0,150,200,0.2);
+    }
+    .input-group .unit { width: 60px; color: #2f6f9c; font-weight: 500; font-size: 0.9rem; flex: 0 0 auto; }
+    
+    .result {
+        background: #e2eff9; border-radius: 40px; padding: 15px 20px; margin-top: 20px;
+        font-size: 1.2rem; border: 1px solid #b0d0e5;
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .result span:first-child { font-weight: 600; color: #003459; }
+    .result .value {
+        font-family: 'Courier New', monospace; font-weight: 700; font-size: 1.6rem;
+        color: #002b4a; background: white; padding: 5px 25px; border-radius: 50px;
+        letter-spacing: 1px; border: 1px solid #7fa9c7;
+    }
+    .radio-group { display: flex; gap: 25px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
+    .radio-group div { display: flex; align-items: center; gap: 6px; }
+    .note {
+        background: #fef6e6; border-left: 6px solid #f0b400; padding: 12px 20px;
+        border-radius: 20px; margin: 20px 0 0; font-size: 0.9rem; color: #3d3d3d;
+    }
+    .explanation {
+        background: #e6f3ff; border-left: 6px solid #0099cc; padding: 12px 20px;
+        border-radius: 20px; margin: 15px 0 0; font-size: 0.9rem; color: #004466;
+    }
+    .footer {
+        background: #cbdae6; padding: 15px 30px; text-align: center;
+        color: #113449; font-size: 0.95rem;
+        border-radius: 0 0 30px 30px;
+    }
+    
+    /* Tabel fix voor lange woorden */
+    table { width:100%; border-collapse: collapse; font-size: 0.9rem; table-layout: fixed; }
+    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #cbdae6; word-wrap: break-word; }
+    th { background: #003b5c; color: white; }
+    
+    [dir="rtl"] .input-group label { text-align: right; }
+    [dir="rtl"] .card h2 { border-left: none; border-right: 10px solid #0099cc; padding-left: 0; padding-right: 18px; }
+    [dir="rtl"] .explanation, [dir="rtl"] .note { border-left: none; border-right: 6px solid #0099cc; }
+    [dir="rtl"] .note { border-right-color: #f0b400; }
 </style>
 </head>
 <body>
 <div class="calculator" id="calcContainer">
-  <div class="header">
-    <div>
-      <h1 id="headerTitle">🔥 Fuel Gas BurnRate Calculator <small id="headerSmall">LPG · propane · butane · nomogram</small></h1>
-      <p id="headerSub">📐 flow rate, volume conversion, efficiency + full load hours per building type</p>
-    </div>
-    <div class="header-actions">
-      <select id="langSelect" class="lang-select" aria-label="Language">
-        <option value="en">🌐 English</option>
-        <option value="de">🌐 Deutsch</option>
-        <option value="nl">🌐 Nederlands</option>
-        <option value="fr">🌐 Français</option>
-        <option value="it">🌐 Italiano</option>
-        <option value="es">🌐 Español</option>
-        <option value="pt">🌐 Português</option>
-        <option value="ru">🌐 Русский</option>
-        <option value="ar">🌐 العربية</option>
-        <option value="sv">🌐 Svenska</option>
-        <option value="no">🌐 Norsk</option>
-        <option value="zh">🌐 中文</option>
-        <option value="ja">🌐 日本語</option>
-      </select>
-      <button class="pdf-btn" id="generatePDF">📄 <span id="pdfBtnText">PDF report</span></button>
-    </div>
-  </div>
-
-  <div class="tool-grid">
-    <!-- 1 -->
-    <div class="card">
-      <h2><span id="card1Title">1. Gas flow Vₙ</span> <span class="sub" id="card1Sub">(normal m³/h)</span></h2>
-      <div class="input-group">
-        <label id="lblQ">Boiler power Q (kW)</label>
-        <input type="number" id="qInput" value="115" step="0.5">
-        <span class="unit">kW</span>
-      </div>
-      <div class="input-group">
-        <label id="lblEta1">Efficiency η (%)</label>
-        <input type="number" id="etaInput1" value="90" step="0.5" min="0" max="100">
-        <span class="unit">%</span>
-      </div>
-      <div class="input-group">
-        <label id="lblSwn">Calorific value S<sub>wn</sub> (kWh/m³)</label>
-        <input type="number" id="swnInput" value="9.8" step="0.05">
-        <span class="unit">kWh/m³</span>
-      </div>
-      <div class="result">
-        <span id="result1Label">📊 Vₙ =</span>
-        <span class="value" id="vnResult">13.04</span>
-        <span>m³/h</span>
-      </div>
-      <div class="note" id="note1">💡 Vₙ = Q / (Swn × (η/100))<br>⏺ example: 115 kW, 90%, 9.8 kWh/m³ → 13.04 m³/h</div>
-    </div>
-
-    <!-- 2 -->
-    <div class="card">
-      <h2><span id="card2Title">2. Conversion Vₙ → V<sub>B</sub></span> <span class="sub" id="card2Sub">(operating flow)</span></h2>
-      <div class="input-group">
-        <label id="lblVn2">Gas flow Vₙ (m³/h)</label>
-        <input type="number" id="vn2Input" value="14.0" step="0.2">
-        <span class="unit">m³/h</span>
-      </div>
-      <div class="input-group">
-        <label id="lblTemp">Gas temperature at meter</label>
-        <input type="number" id="tempInput" value="10" step="1">
-        <span class="unit">°C</span>
-      </div>
-      <div class="input-group">
-        <label id="lblPgas">Gas overpressure P<sub>gas</sub></label>
-        <input type="number" id="pgasInput" value="25" step="1">
-        <span class="unit">mbar</span>
-      </div>
-      <div class="input-group">
-        <label id="lblAlt">Altitude above sea level</label>
-        <input type="number" id="altInput" value="0" step="10">
-        <span class="unit">m</span>
-      </div>
-      <div class="result">
-        <span id="result2Label">🌡️ V<sub>B</sub> =</span>
-        <span class="value" id="vbResult">15.28</span>
-        <span>m³/h</span>
-      </div>
-      <div class="note" id="note2">📍 air pressure calculated from altitude; standard 1013.25 mbar, 0°C → Vb = Vn × (Pn/Pabs) × (Tb/Tn)</div>
-    </div>
-
-    <!-- 3 -->
-    <div class="card">
-      <h2><span id="card3Title">3. Consumption & time</span> <span class="sub" id="card3Sub">V<sub>B</sub> → liters / seconds</span></h2>
-      <div class="input-group">
-        <label id="lblVb3">Gas flow V<sub>B</sub> (m³/h)</label>
-        <input type="number" id="vb3Input" value="15.0" step="0.2">
-        <span class="unit">m³/h</span>
-      </div>
-      <div style="display: flex; gap: 16px; flex-wrap: wrap; margin: 10px 0;">
-        <div style="flex:1; min-width: 200px;">
-          <div class="input-group">
-            <label id="lblVolLiter">Measured volume (liters)</label>
-            <input type="number" id="volLiterInput" value="300" step="5">
-            <span class="unit">L</span>
-          </div>
+    <div class="header">
+        <div>
+            <h1 data-i18n="title">⛽ Gas Combustion Installation</h1>
+            <p class="subtitle" data-i18n="subtitle">📍 Nomogram + worksheets – all gas types</p>
         </div>
-        <div style="flex:1; min-width: 200px;">
-          <div class="input-group">
-            <label id="lblTimeSec">Measurement time t (s)</label>
-            <input type="number" id="timeSecInput" value="72" step="1">
-            <span class="unit">s</span>
-          </div>
+        <div class="header-actions">
+            <select class="lang-select" id="langSelect">
+                <option value="en" selected>English</option>
+                <option value="nl">Nederlands</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="it">Italiano</option>
+                <option value="ru">Русский</option>
+                <option value="no">Norsk</option>
+                <option value="sv">Svenska</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+                <option value="ar">العربية</option>
+            </select>
+            <button class="pdf-btn" id="generatePDF" data-i18n="pdfBtn">📄 Generate PDF report</button>
         </div>
-      </div>
-      <div class="inline-buttons">
-        <button id="calcTimeBtn" class="action-btn" type="button">⏱️ <span id="btnCalcTime">Calculate time</span></button>
-        <button id="calcVolumeBtn" class="action-btn" type="button">📦 <span id="btnCalcVolume">Calculate volume</span></button>
-      </div>
-      <div class="result" style="margin-top: 20px;">
-        <span id="verbruikLabel">⏲️ t =</span>
-        <span class="value" id="verbruikResult">72.0</span>
-        <span id="verbruikEenheid">s</span>
-      </div>
-      <div class="note" id="note3">⚙️ Vb=15 m³/h, 300 liters → t = 72.0 s | relation: Vb (m³/h) = (liters × 3.6) / t (s)</div>
     </div>
 
-    <!-- 4 -->
-    <div class="card">
-      <h2><span id="card4Title">4. Combustion efficiency η</span> <span class="sub" id="card4Sub">(nomogram / Weisschaut)</span></h2>
-      <div class="input-group">
-        <label id="lblFuel">Fuel type</label>
-        <select id="fuelSelect">
-          <option value="aardgas" id="optAardgas">Natural gas / town gas</option>
-          <option value="vloeibaar" id="optVloeibaar">Liquid gas (LPG mixture)</option>
-          <option value="propaan" selected id="optPropaan">Propane (C3H8)</option>
-          <option value="butaan" id="optButaan">Butane (C4H10)</option>
-          <option value="cokes" id="optCokes">Coke gas / blast furnace gas</option>
-        </select>
-      </div>
-      <div class="radio-group">
-        <div><input type="radio" name="gasType" id="co2Radio" value="co2"> <label for="co2Radio" id="lblCo2">📊 CO₂ %</label></div>
-        <div><input type="radio" name="gasType" id="o2Radio" value="o2" checked> <label for="o2Radio" id="lblO2">💨 O₂ %</label></div>
-      </div>
-      <div class="input-group">
-        <label id="lblPerc">Flue gas percentage (CO₂ or O₂)</label>
-        <input type="number" id="percInput" value="3.0" step="0.1" min="0" max="21">
-        <span class="unit">%</span>
-      </div>
-      <div class="input-group">
-        <label id="lblDt">Δt (flue gas − intake air)</label>
-        <input type="number" id="dtInput" value="160" step="2">
-        <span class="unit">K</span>
-      </div>
-      <div class="result">
-        <span id="result4Label">🔥 Combustion efficiency η =</span>
-        <span class="value" id="etaResult">92.6</span>
-        <span>%</span>
-      </div>
-      <div class="note" id="note4">✅ <strong>Propane/butane/LPG-specific K-coefficients</strong> built in.<br>📌 example: propane O₂=3% Δt=160K → η ≈ 92.6%</div>
-    </div>
-
-    <!-- 5 -->
-    <div class="card" style="grid-column: span 2;">
-      <h2><span id="card5Title">📅 Full load hours per building type</span> <span class="sub" id="card5Sub">(reference values for energy calculation)</span></h2>
-      <table class="fullhours-table">
-        <thead>
-          <tr>
-            <th id="thBuilding">🏢 Building function</th>
-            <th id="thHours">⏱️ Full load hours / year (range)</th>
-            <th id="thNote">📘 Explanation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td id="row1b">🏥 Care homes</td><td><span class="range-badge">1300 – 1900</span> <span class="unit-hours" id="unitHours">hours/year</span></td><td id="row1n">Continuous heat demand, care institutions</td></tr>
-          <tr><td id="row2b">🏨 Hospitals</td><td><span class="range-badge">1500 – 2000</span> <span class="unit-hours">hours/year</span></td><td id="row2n">Very high heat load, 24/7 operation</td></tr>
-          <tr><td id="row3b">🏢 Offices</td><td><span class="range-badge">900 – 1600</span> <span class="unit-hours">hours/year</span></td><td id="row3n">Depends on insulation and usage hours</td></tr>
-          <tr><td id="row4b">🏫 Schools</td><td><span class="range-badge">800 – 1300</span> <span class="unit-hours">hours/year</span></td><td id="row4n">Heating season + daily rhythm</td></tr>
-          <tr><td id="row5b">🏠 Dwellings</td><td><span class="range-badge">1200 – 1500</span> <span class="unit-hours">hours/year</span></td><td id="row5n">Average Dutch home</td></tr>
-          <tr><td id="row6b">🏭 Other (industry, hospitality, etc.)</td><td><span class="range-badge">1000 – 2000</span> <span class="unit-hours">hours/year</span></td><td id="row6n">Process heat dependent</td></tr>
-        </tbody>
-      </table>
-      <div class="note" style="margin-top: 16px;" id="note5">
-        💡 <strong>Tip:</strong> Multiply the nominal boiler power (kW) by the full load hours for an estimate of annual gas consumption (kWh/year).<br>
-        📐 Example: 100 kW boiler in an office with 1200 full load hours → 120,000 kWh/year → approx. 12,000 m³ gas (at 9.8 kWh/m³).
-      </div>
-    </div>
-
-    <!-- 6 RENEWABLE ADVISOR -->
-    <div class="card renewable">
-      <h2><span id="card6Title">6. Sustainable / renewable power advisor</span> <span class="sub" id="card6Sub">(heat pump · pellet · solar · infrared · HR boiler · WKO)</span></h2>
-
-      <div class="renew-grid">
-        <div class="renew-box">
-          <h3>🔧 Building &amp; demand</h3>
-          <div class="input-group">
-            <label>Building type</label>
-            <select id="renewBuilding">
-              <option value="woning">🏠 Dwelling (well insulated)</option>
-              <option value="woningMatig">🏠 Dwelling (moderate insulation)</option>
-              <option value="kantoor">🏢 Office</option>
-              <option value="school">🏫 School</option>
-              <option value="zorg">🏥 Care home / hospital</option>
-              <option value="industrie">🏭 Industry / process</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label>Heated floor area</label>
-            <input type="number" id="renewArea" value="150" step="5" min="10">
-            <span class="unit">m²</span>
-          </div>
-          <div class="input-group">
-            <label>Insulation level</label>
-            <select id="renewInsulation">
-              <option value="good">Good (label A/B, 30–50 W/m²)</option>
-              <option value="average" selected>Average (label C/D, 60–80 W/m²)</option>
-              <option value="poor">Poor (label E/F/G, 90–120 W/m²)</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label>Desired coverage</label>
-            <select id="renewCoverage">
-              <option value="1.0">100% – fully renewable</option>
-              <option value="0.8" selected>80% – hybrid with gas</option>
-              <option value="0.6">60% – partial coverage</option>
-              <option value="0.4">40% – support only</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label>Preferred solution</label>
-            <select id="renewSolution">
-              <option value="auto" selected>🤖 Automatic advice</option>
-              <option value="wp">🌡️ Heat pump (air/water)</option>
-              <option value="wpGrond">🌍 Ground-source heat pump</option>
-              <option value="pellet">🪵 Pellet stove / boiler</option>
-              <option value="solar">☀️ Solar boiler (thermal)</option>
-              <option value="infrarood">🔥 Infrared panels</option>
-              <option value="hr">⚡ HR boiler (condensing)</option>
-              <option value="wko">💧 WKO / thermal storage</option>
-            </select>
-          </div>
+    <div class="tool-grid">
+        <!-- 1. Gas flow Vn -->
+        <div class="card">
+            <h2><span data-i18n="s1_title">1. Gas flow Vₙ</span><i data-i18n="s1_sub">m³/h (normal)</i></h2>
+            <div class="input-group">
+                <label data-i18n="s1_q">Boiler power Q (kW)</label>
+                <input type="number" id="qInput" value="115" step="0.1"><span class="unit">kW</span>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s1_eta">Operating efficiency η (%)</label>
+                <input type="number" id="etaInput1" value="90" step="0.1" min="0" max="100"><span class="unit">%</span>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s1_swn">Calorific value Swn (kWh/m³)</label>
+                <input type="number" id="swnInput" value="9.8" step="0.01"><span class="unit">kWh/m³</span>
+            </div>
+            <div class="result"><span>Vₙ =</span><span class="value" id="vnResult">13.04</span></div>
+            <div class="explanation" data-i18n="s1_explain">ℹ️ Explanation: Vₙ = Q / (Swn × η/100).</div>
         </div>
 
-        <div class="renew-box">
-          <h3>📊 Result &amp; recommendation</h3>
-          <div class="renew-result">
-            <span class="sub-label">Required power</span>
-            <span class="big" id="renewPower">9.0</span>
-            <span class="sub-label">kW</span>
-          </div>
-          <div class="renew-result" style="margin-top: 10px;">
-            <span class="sub-label">Annual heat demand</span>
-            <span class="big" id="renewDemand">13 500</span>
-            <span class="sub-label">kWh/year</span>
-          </div>
-          <ul class="advice-list" id="renewAdvice">
-            <li>Vul de gegevens in om een advies te krijgen.</li>
-          </ul>
+        <!-- 2. Volume conversion -->
+        <div class="card">
+            <h2><span data-i18n="s2_title">2. Volume conversion Vₙ → VB</span><i data-i18n="s2_sub">operating state</i></h2>
+            <div class="input-group">
+                <label data-i18n="s2_vn">Gas flow Vₙ (m³/h)</label>
+                <input type="number" id="vn2Input" value="14.0" step="0.1"><span class="unit">m³/h</span>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s2_temp">Gas temperature at meter</label>
+                <input type="number" id="tempInput" value="10" step="0.1"><span class="unit">°C</span>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s2_pgas">Gas pressure (gauge) Pgas</label>
+                <input type="number" id="pgasInput" value="25" step="0.1"><span class="unit">mbar</span>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s2_alt">Altitude above sea level</label>
+                <input type="number" id="altInput" value="0" step="1"><span class="unit">m</span>
+            </div>
+            <div class="result"><span>V<sub>B</sub> =</span><span class="value" id="vbResult">15.28</span></div>
+            <div class="explanation" data-i18n="s2_explain">ℹ️ Explanation: VB = Vₙ × (1013.25 / Pabs) × ((Tgas+273.15) / 273.15).</div>
         </div>
-      </div>
 
-      <table class="renew-table" id="renewTable">
-        <thead>
-          <tr>
-            <th>Oplossing</th>
-            <th>Vermogen</th>
-            <th>COP / rendement</th>
-            <th>CO₂-besparing</th>
-            <th>Geschikt?</th>
-          </tr>
-        </thead>
-        <tbody id="renewTableBody">
-          <tr><td colspan="5">Berekening volgt…</td></tr>
-        </tbody>
-      </table>
+        <!-- 3. Gas consumption -->
+        <div class="card">
+            <h2><span data-i18n="s3_title">3. Gas consumption per hour</span><i data-i18n="s3_sub">VB – time – volume</i></h2>
+            <div class="input-group">
+                <label data-i18n="s3_vb">Gas flow VB (m³/h)</label>
+                <input type="number" id="vb3Input" value="15.0" step="0.1"><span class="unit">m³/h</span>
+            </div>
+            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
+                <div style="flex:1 1 180px; min-width:0;">
+                    <div class="input-group">
+                        <label data-i18n="s3_vol">Measured volume (litres)</label>
+                        <input type="number" id="volLiterInput" value="300" step="1"><span class="unit">L</span>
+                    </div>
+                </div>
+                <div style="flex:1 1 180px; min-width:0;">
+                    <div class="input-group">
+                        <label data-i18n="s3_time">Measurement time t (s)</label>
+                        <input type="number" id="timeSecInput" value="72" step="0.1"><span class="unit">s</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                <button id="calcTimeBtn" style="flex:1; background:#0077aa; color:white; border:none; border-radius:40px; padding:12px; font-weight:bold; cursor:pointer;" data-i18n="s3_calcTime">Calculate time ⏱️</button>
+                <button id="calcVolumeBtn" style="flex:1; background:#2a7f62; color:white; border:none; border-radius:40px; padding:12px; font-weight:bold; cursor:pointer;" data-i18n="s3_calcVol">Calculate volume 📊</button>
+            </div>
+            <div class="result" style="margin-top:20px;">
+                <span id="verbruikLabel">t =</span><span class="value" id="verbruikResult">72.0</span>
+            </div>
+            <div class="explanation" data-i18n="s3_explain">ℹ️ Explanation: t (s) = (volume in L × 3.6) / VB, or volume (L) = (VB × t) / 3.6.</div>
+        </div>
 
-      <div class="renew-note">
-        💡 <strong>Tip:</strong> De waarden zijn indicatief. Laat een warmteverliesberekening (ISSO 51/53) uitvoeren voor een definitief ontwerp.
-        Een hybride oplossing (warmtepomp + HR-ketel) is vaak de meest kosteneffectieve eerste stap.
-      </div>
+        <!-- 4. Combustion efficiency -->
+        <div class="card">
+            <h2><span data-i18n="s4_title">4. Combustion efficiency η</span><i data-i18n="s4_sub">CO₂ / O₂ + Δt</i></h2>
+            <div class="input-group">
+                <label data-i18n="s4_fuel">Fuel type</label>
+                <select id="fuelSelect">
+                    <option value="aardgas" selected data-i18n="fuel_nat">Natural gas / town gas</option>
+                    <option value="vloeibaar" data-i18n="fuel_lpg">Liquefied gas (LPG mix)</option>
+                    <option value="propaan" data-i18n="fuel_prop">Propane (C3H8)</option>
+                    <option value="butaan" data-i18n="fuel_but">Butane (C4H10)</option>
+                    <option value="cokes" data-i18n="fuel_coke">Coke gas</option>
+                </select>
+            </div>
+            <div class="radio-group">
+                <div><input type="radio" name="gasType" id="co2Radio" value="co2" checked><label for="co2Radio" data-i18n="s4_co2">CO₂ %</label></div>
+                <div><input type="radio" name="gasType" id="o2Radio" value="o2"><label for="o2Radio" data-i18n="s4_o2">O₂ %</label></div>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s4_perc">Percentage in flue gas</label>
+                <input type="number" id="percInput" value="12.0" step="0.1" min="0" max="21"><span class="unit">%</span>
+            </div>
+            <div class="input-group">
+                <label data-i18n="s4_dt">Δt (flue − intake)</label>
+                <input type="number" id="dtInput" value="140" step="1"><span class="unit">K</span>
+            </div>
+            <div class="result"><span>η =</span><span class="value" id="etaResult">94.0</span></div>
+            <div class="explanation" data-i18n="s4_explain">ℹ️ Explanation: CO₂: loss = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20.9 − O₂)/20.9.</div>
+        </div>
+
+        <!-- 5. m³ to kW -->
+        <div class="card" style="grid-column: span 1; /* Aangepast voor betere flow */">
+            <h2><span data-i18n="s5_title">5. m³ to kW converter</span><i data-i18n="s5_sub">for all gas types</i></h2>
+            <div style="display:flex; flex-wrap:wrap; gap:30px; align-items:flex-start;">
+                <div style="flex:1 1 280px; min-width:0;">
+                    <div class="input-group">
+                        <label data-i18n="s5_vol">Volume (m³/h)</label>
+                        <input type="number" id="gasVolumeInput" value="1.0" step="0.1" min="0"><span class="unit">m³/h</span>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="s5_type">Gas type</label>
+                        <select id="gasTypeSelect">
+                            <option value="aardgas_10p55" selected data-i18n="gas_nat_std">Natural gas (10.55 kWh/m³) [1]</option>
+                            <option value="aardgas_10p63" data-i18n="gas_nat_hi">Natural gas (10.63 kWh/m³) [2]</option>
+                            <option value="aardgas_10p1" data-i18n="gas_nat_lo">Natural gas (10.1 kWh/m³ – low cal.)</option>
+                            <option value="propaan_26" data-i18n="gas_prop">Propane (26 kWh/m³) [5]</option>
+                            <option value="butaan_28" data-i18n="gas_but">Butane (28 kWh/m³) [5]</option>
+                            <option value="lpg_26p1" data-i18n="gas_lpg">LPG (26.1 kWh/m³) [5]</option>
+                            <option value="lpg_24perliter" data-i18n="gas_lpg_liq">LPG liquid (24 MJ/l → 15.3 kWh/m³)* [8]</option>
+                            <option value="cokes" data-i18n="gas_coke">Coke gas (5.0 kWh/m³)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="s5_eff">Efficiency η (%)</label>
+                        <input type="number" id="efficiencyInput" value="100" step="0.1" min="0" max="100"><span class="unit">%</span>
+                    </div>
+                    <div class="result"><span data-i18n="s5_power">Power =</span><span class="value" id="powerResult">10.55 kW</span></div>
+                    <div class="note" data-i18n="s5_note">⚡ Calculation: (m³/h) × (kWh/m³) × (η/100) = kW</div>
+                </div>
+            </div>
+            <div class="explanation" style="margin-top:20px;" data-i18n="s5_explain">ℹ️ How it works: choose gas type and volume in m³/h. Power = volume × energy content × efficiency.</div>
+        </div>
+
+        <!-- 6. CO2 equivalent -->
+        <div class="card" style="grid-column: span 1;">
+            <h2><span data-i18n="s6_title">6. CO₂ equivalent · car · trees</span><i data-i18n="s6_sub">New York ⇄ Beijing</i></h2>
+            <div style="display:flex; flex-wrap:wrap; gap:30px; align-items:flex-start;">
+                <div style="flex:1 1 280px; min-width:0;">
+                    <div class="input-group">
+                        <label data-i18n="s6_flight">Flight type</label>
+                        <select id="flightTypeSelect">
+                            <option value="retour" selected data-i18n="s6_retour">Return (3,920 kg CO₂e)</option>
+                            <option value="enkel" data-i18n="s6_single">One-way (1,960 kg CO₂e)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="s6_car">Car emission (g CO₂/km)</label>
+                        <input type="number" id="carEmissionInput" value="157" step="1" min="0"><span class="unit">g/km</span>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="s6_tree">Tree uptake (kg CO₂/yr)</label>
+                        <input type="number" id="treeUptakeInput" value="25" step="1" min="0"><span class="unit">kg/yr</span>
+                    </div>
+                    <div class="result"><span data-i18n="s6_co2e">✈️ CO₂e =</span><span class="value" id="flightCo2Result">3,920 kg</span></div>
+                    <div class="result" style="margin-top:10px;"><span data-i18n="s6_carkm">🚗 Equivalent car</span><span class="value" id="carKmResult">24,968 km</span></div>
+                    <div class="result" style="margin-top:10px;"><span data-i18n="s6_trees">🌳 Equivalent trees</span><span class="value" id="treeResult">156.8 trees/yr</span></div>
+                    <div class="explanation" data-i18n="s6_explain">ℹ️ Explanation: flight CO₂e based on Atmosfair economy return NY–Beijing. Car km = CO₂e ÷ average emission. Trees = CO₂e ÷ yearly uptake.</div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="footer" id="footerText">
-    🧪 Normal conditions: 0°C, 1013.25 mbar. Air pressure correction via altitude. Full load hours based on SBR guidelines and ISSO publications.
-  </div>
-
-  <div class="mw-footer">
-    <div class="mw-made" id="mwMade">✨ <span class="spark">Made with AI support</span></div>
-    <svg class="mw-whale" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Magic Whale logo">
-      <defs>
-        <linearGradient id="whaleBody" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#6fd4c8"/>
-          <stop offset="100%" stop-color="#2a8f9c"/>
-        </linearGradient>
-      </defs>
-      <path d="M8 34 C8 22, 20 14, 34 14 C46 14, 54 20, 56 30 C57 34, 54 38, 50 38 L34 38 C26 38, 22 42, 20 48 L16 52 L14 44 C10 42, 8 38, 8 34 Z"
-            fill="url(#whaleBody)" stroke="#0d4c57" stroke-width="1.2"/>
-      <path d="M14 34 C16 40, 24 42, 34 42 L48 42 C46 40, 40 38, 34 38 C26 38, 20 36, 14 34 Z"
-            fill="#bdf0e8" opacity="0.75"/>
-      <circle cx="46" cy="24" r="2.2" fill="#0d4c57"/>
-      <circle cx="46.7" cy="23.3" r="0.7" fill="#ffffff"/>
-      <path d="M30 12 C30 6, 34 4, 38 6 C36 8, 34 9, 34 12" fill="none" stroke="#6fd4c8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M24 38 C22 44, 24 50, 30 50 C28 46, 28 42, 30 38 Z" fill="#2a8f9c"/>
-      <circle cx="52" cy="18" r="1.6" fill="#6fd4c8" opacity="0.8"/>
-      <circle cx="55" cy="22" r="1.1" fill="#6fd4c8" opacity="0.6"/>
-      <circle cx="50" cy="14" r="0.9" fill="#6fd4c8" opacity="0.5"/>
-    </svg>
-    <a class="mw-mail" href="mailto:info@magicwhale.eu">✉️ info@magicwhale.eu</a>
-    <div class="mw-copy" id="mwCopy">© <span id="mwYear"></span> Magic Whale · Fuel Gas BurnRate Calculator</div>
-  </div>
-</div>
-
-<div class="sample-bar" id="sampleBar">
-  <span id="sampleLabel">🧪 Examples:</span>
-  <button type="button" id="sampleVn">1. Vn</button>
-  <button type="button" id="samplePropaan">Propane</button>
-  <button type="button" id="sampleLPG">LPG</button>
+    <div class="footer" data-i18n="footer">⚡ Use 📄 PDF for a complete report (including m³→kW and CO₂ equivalent)</div>
 </div>
 
 <script>
-// ====== BASIS ======
-const APP_NAME = "Fuel Gas BurnRate Calculator";
-document.getElementById('mwYear').textContent = new Date().getFullYear();
+(function() {
+    // ======================= TRANSLATIONS =======================
+    const I18N = {
+        en: {
+            title: "⛽ Gas Combustion Installation",
+            subtitle: "📍 Nomogram + worksheets – all gas types",
+            pdfBtn: "📄 Generate PDF report",
+            s1_title: "1. Gas flow Vₙ", s1_sub: "m³/h (normal)",
+            s1_q: "Boiler power Q (kW)", s1_eta: "Operating efficiency η (%)", s1_swn: "Calorific value Swn (kWh/m³)",
+            s1_explain: "ℹ️ Explanation: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Volume conversion Vₙ → VB", s2_sub: "operating state",
+            s2_vn: "Gas flow Vₙ (m³/h)", s2_temp: "Gas temperature at meter", s2_pgas: "Gas pressure (gauge) Pgas", s2_alt: "Altitude above sea level",
+            s2_explain: "ℹ️ Explanation: VB = Vₙ × (1013.25 / Pabs) × ((Tgas+273.15)/273.15).",
+            s3_title: "3. Gas consumption per hour", s3_sub: "VB – time – volume",
+            s3_vb: "Gas flow VB (m³/h)", s3_vol: "Measured volume (litres)", s3_time: "Measurement time t (s)",
+            s3_calcTime: "Calculate time ⏱️", s3_calcVol: "Calculate volume 📊",
+            s3_explain: "ℹ️ Explanation: t (s) = (volume L × 3.6) / VB, or volume (L) = (VB × t) / 3.6.",
+            s4_title: "4. Combustion efficiency η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Fuel type", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Percentage in flue gas", s4_dt: "Δt (flue − intake)",
+            fuel_nat: "Natural gas / town gas", fuel_lpg: "Liquefied gas (LPG mix)", fuel_prop: "Propane (C3H8)", fuel_but: "Butane (C4H10)", fuel_coke: "Coke gas",
+            s4_explain: "ℹ️ Explanation: CO₂: loss = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20.9 − O₂)/20.9.",
+            s5_title: "5. m³ to kW converter", s5_sub: "for all gas types",
+            s5_vol: "Volume (m³/h)", s5_type: "Gas type", s5_eff: "Efficiency η (%)", s5_power: "Power =",
+            s5_note: "⚡ Calculation: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Energy content per m³", th_gas: "Gas type",
+            gas_nat_std: "Natural gas (10.55 kWh/m³) [1]", gas_nat_hi: "Natural gas (10.63 kWh/m³) [2]", gas_nat_lo: "Natural gas (10.1 kWh/m³ – low cal.)",
+            gas_prop: "Propane (26 kWh/m³) [5]", gas_but: "Butane (28 kWh/m³) [5]", gas_lpg: "LPG (26.1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG liquid (24 MJ/l → 15.3 kWh/m³)* [8]", gas_coke: "Coke gas (5.0 kWh/m³)",
+            gas_nat_std_short: "Natural gas (standard)", gas_nat_hi_short: "Natural gas (high cal.)", gas_nat_lo_short: "Natural gas (low cal.)",
+            gas_prop_short: "Propane (gas)", gas_but_short: "Butane (gas)", gas_lpg_short: "LPG (gas)", gas_lpg_liq_short: "LPG liquid*", gas_coke_short: "Coke gas",
+            s5_tableNote: "*LPG liquid in litres converted to m³ gas. Indicative values.",
+            s5_explain: "ℹ️ How it works: choose gas type and volume in m³/h. Power = volume × energy content × efficiency.",
+            s6_title: "6. CO₂ equivalent · car · trees", s6_sub: "New York ⇄ Beijing",
+            s6_flight: "Flight type", s6_retour: "Return (3,920 kg CO₂e)", s6_single: "One-way (1,960 kg CO₂e)",
+            s6_car: "Car emission (g CO₂/km)", s6_tree: "Tree uptake (kg CO₂/yr)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Equivalent car", s6_trees: "🌳 Equivalent trees",
+            s6_explain: "ℹ️ Explanation: flight CO₂e based on Atmosfair economy return NY–Beijing. Car km = CO₂e ÷ average emission. Trees = CO₂e ÷ yearly uptake.",
+            s6_langTitle: "🌍 All languages",
+            footer: "⚡ Use 📄 PDF for a complete report (including m³→kW and CO₂ equivalent)",
+            flight: "Flight", car: "Car", trees: "Trees", treesUnit: "trees/year"
+        },
+        nl: {
+            title: "⛽ Gasverbrandingsinstallatie", subtitle: "📍 Nomogram + rekenbladen – alle gassoorten",
+            pdfBtn: "📄 PDF-rapport genereren",
+            s1_title: "1. Gasdebit Vₙ", s1_sub: "m³/h (normaal)",
+            s1_q: "Ketelvermogen Q (kW)", s1_eta: "Werkingsrendement η (%)", s1_swn: "Stookwaarde Swn (kWh/m³)",
+            s1_explain: "ℹ️ Uitleg: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Volume-omrekening Vₙ → VB", s2_sub: "bedrijfstoestand",
+            s2_vn: "Gasdebit Vₙ (m³/h)", s2_temp: "Gastemperatuur aan teller", s2_pgas: "Gasdruk (overdruk) Pgas", s2_alt: "Hoogte boven zeespiegel",
+            s2_explain: "ℹ️ Uitleg: VB = Vₙ × (1013,25 / Pabs) × ((Tgas+273,15)/273,15).",
+            s3_title: "3. Gasverbruik per uur", s3_sub: "VB – tijd – volume",
+            s3_vb: "Gasdebit VB (m³/h)", s3_vol: "Gemeten volume (liter)", s3_time: "Meettijd t (s)",
+            s3_calcTime: "Bereken tijd ⏱️", s3_calcVol: "Bereken volume 📊",
+            s3_explain: "ℹ️ Uitleg: t (s) = (volume L × 3,6) / VB, of volume (L) = (VB × t) / 3,6.",
+            s4_title: "4. Verbrandingsrendement η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Brandstoftype", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Percentage in rookgas", s4_dt: "Δt (rookgas − aanzuig)",
+            fuel_nat: "Aardgas / stadsgas", fuel_lpg: "Vloeibaar gas (LPG-mengsel)", fuel_prop: "Propaan (C3H8)", fuel_but: "Butaan (C4H10)", fuel_coke: "Cokegas",
+            s4_explain: "ℹ️ Uitleg: CO₂: verlies = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. m³ naar kW converter", s5_sub: "voor alle gassoorten",
+            s5_vol: "Volume (m³/h)", s5_type: "Gassoort", s5_eff: "Rendement η (%)", s5_power: "Vermogen =",
+            s5_note: "⚡ Berekening: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Energie-inhoud per m³", th_gas: "Gassoort",
+            gas_nat_std: "Aardgas (10,55 kWh/m³) [1]", gas_nat_hi: "Aardgas (10,63 kWh/m³) [2]", gas_nat_lo: "Aardgas (10,1 kWh/m³ – laagcal.)",
+            gas_prop: "Propaan (26 kWh/m³) [5]", gas_but: "Butaan (28 kWh/m³) [5]", gas_lpg: "LPG (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG vloeibaar (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Cokegas (5,0 kWh/m³)",
+            gas_nat_std_short: "Aardgas (standaard)", gas_nat_hi_short: "Aardgas (hoogcal.)", gas_nat_lo_short: "Aardgas (laagcal.)",
+            gas_prop_short: "Propaan (gas)", gas_but_short: "Butaan (gas)", gas_lpg_short: "LPG (gas)", gas_lpg_liq_short: "LPG vloeibaar*", gas_coke_short: "Cokegas",
+            s5_tableNote: "*LPG vloeibaar in liters omgerekend naar m³ gas. Indicatieve waarden.",
+            s5_explain: "ℹ️ Hoe werkt het: kies gassoort en volume in m³/h. Vermogen = volume × energie-inhoud × rendement.",
+            s6_title: "6. CO₂-equivalent · auto · bomen", s6_sub: "New York ⇄ Peking",
+            s6_flight: "Vluchttype", s6_retour: "Retour (3.920 kg CO₂e)", s6_single: "Enkele reis (1.960 kg CO₂e)",
+            s6_car: "Auto-uitstoot (g CO₂/km)", s6_tree: "Boomopname (kg CO₂/jaar)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Equivalente auto", s6_trees: "🌳 Equivalente bomen",
+            s6_explain: "ℹ️ Uitleg: CO₂e op basis van Atmosfair economy retour NY–Peking. Auto km = CO₂e ÷ gemiddelde uitstoot. Bomen = CO₂e ÷ jaaropname.",
+            s6_langTitle: "🌍 Alle talen",
+            footer: "⚡ Gebruik 📄 PDF voor een volledig rapport (incl. m³→kW en CO₂-equivalent)",
+            flight: "Vlucht", car: "Auto", trees: "Bomen", treesUnit: "bomen/jaar"
+        },
+        fr: {
+            title: "⛽ Installation de combustion au gaz", subtitle: "📍 Abaque + feuilles de calcul – tous gaz",
+            pdfBtn: "📄 Générer le rapport PDF",
+            s1_title: "1. Débit de gaz Vₙ", s1_sub: "m³/h (normal)",
+            s1_q: "Puissance chaudière Q (kW)", s1_eta: "Rendement η (%)", s1_swn: "Pouvoir calorifique Swn (kWh/m³)",
+            s1_explain: "ℹ️ Explication : Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Conversion de volume Vₙ → VB", s2_sub: "état de service",
+            s2_vn: "Débit Vₙ (m³/h)", s2_temp: "Température au compteur", s2_pgas: "Pression (relative) Pgas", s2_alt: "Altitude",
+            s2_explain: "ℹ️ Explication : VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Consommation horaire", s3_sub: "VB – temps – volume",
+            s3_vb: "Débit VB (m³/h)", s3_vol: "Volume mesuré (litres)", s3_time: "Temps t (s)",
+            s3_calcTime: "Calculer le temps ⏱️", s3_calcVol: "Calculer le volume 📊",
+            s3_explain: "ℹ️ Explication : t (s) = (volume L × 3,6) / VB, ou volume (L) = (VB × t) / 3,6.",
+            s4_title: "4. Rendement de combustion η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Type de combustible", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Pourcentage dans les fumées", s4_dt: "Δt (fumées − air)",
+            fuel_nat: "Gaz naturel / gaz de ville", fuel_lpg: "Gaz liquéfié (mélange GPL)", fuel_prop: "Propane (C3H8)", fuel_but: "Butane (C4H10)", fuel_coke: "Gaz de cokerie",
+            s4_explain: "ℹ️ Explication : CO₂ : perte = (K × Δt)/CO₂. O₂ : CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. Convertisseur m³ → kW", s5_sub: "pour tous les gaz",
+            s5_vol: "Volume (m³/h)", s5_type: "Type de gaz", s5_eff: "Rendement η (%)", s5_power: "Puissance =",
+            s5_note: "⚡ Calcul : (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Contenu énergétique par m³", th_gas: "Type de gaz",
+            gas_nat_std: "Gaz naturel (10,55 kWh/m³) [1]", gas_nat_hi: "Gaz naturel (10,63 kWh/m³) [2]", gas_nat_lo: "Gaz naturel (10,1 kWh/m³ – bas)",
+            gas_prop: "Propane (26 kWh/m³) [5]", gas_but: "Butane (28 kWh/m³) [5]", gas_lpg: "GPL (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "GPL liquide (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Gaz de cokerie (5,0 kWh/m³)",
+            gas_nat_std_short: "Gaz naturel (standard)", gas_nat_hi_short: "Gaz naturel (haut)", gas_nat_lo_short: "Gaz naturel (bas)",
+            gas_prop_short: "Propane (gaz)", gas_but_short: "Butane (gaz)", gas_lpg_short: "GPL (gaz)", gas_lpg_liq_short: "GPL liquide*", gas_coke_short: "Gaz de cokerie",
+            s5_tableNote: "*GPL liquide en litres converti en m³ gazeux. Valeurs indicatives.",
+            s5_explain: "ℹ️ Principe : choisissez le gaz et le volume. Puissance = volume × contenu énergétique × rendement.",
+            s6_title: "6. Équivalent CO₂ · voiture · arbres", s6_sub: "New York ⇄ Pékin",
+            s6_flight: "Type de vol", s6_retour: "Aller-retour (3 920 kg CO₂e)", s6_single: "Aller simple (1 960 kg CO₂e)",
+            s6_car: "Émission voiture (g CO₂/km)", s6_tree: "Absorption arbre (kg CO₂/an)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Voiture équivalente", s6_trees: "🌳 Arbres équivalents",
+            s6_explain: "ℹ️ Explication : CO₂e basé sur Atmosfair economy NY–Pékin. km = CO₂e ÷ émission moyenne. Arbres = CO₂e ÷ absorption annuelle.",
+            s6_langTitle: "🌍 Toutes les langues",
+            footer: "⚡ Utilisez 📄 PDF pour un rapport complet (m³→kW et équivalent CO₂)",
+            flight: "Vol", car: "Voiture", trees: "Arbres", treesUnit: "arbres/an"
+        },
+        de: {
+            title: "⛽ Gasverbrennungsanlage", subtitle: "📍 Nomogramm + Rechenblätter – alle Gasarten",
+            pdfBtn: "📄 PDF-Bericht erstellen",
+            s1_title: "1. Gasdurchfluss Vₙ", s1_sub: "m³/h (Norm)",
+            s1_q: "Kesselleistung Q (kW)", s1_eta: "Betriebswirkungsgrad η (%)", s1_swn: "Heizwert Swn (kWh/m³)",
+            s1_explain: "ℹ️ Erklärung: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Volumenumrechnung Vₙ → VB", s2_sub: "Betriebszustand",
+            s2_vn: "Gasdurchfluss Vₙ (m³/h)", s2_temp: "Gastemperatur am Zähler", s2_pgas: "Gasdruck (Überdruck) Pgas", s2_alt: "Höhe über NN",
+            s2_explain: "ℹ️ Erklärung: VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Gasverbrauch pro Stunde", s3_sub: "VB – Zeit – Volumen",
+            s3_vb: "Gasdurchfluss VB (m³/h)", s3_vol: "Gemessenes Volumen (Liter)", s3_time: "Messzeit t (s)",
+            s3_calcTime: "Zeit berechnen ⏱️", s3_calcVol: "Volumen berechnen 📊",
+            s3_explain: "ℹ️ Erklärung: t (s) = (Volumen L × 3,6) / VB, oder Volumen (L) = (VB × t) / 3,6.",
+            s4_title: "4. Verbrennungswirkungsgrad η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Brennstofftyp", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Prozent im Rauchgas", s4_dt: "Δt (Rauchgas − Luft)",
+            fuel_nat: "Erdgas / Stadtgas", fuel_lpg: "Flüssiggas (LPG-Mischung)", fuel_prop: "Propan (C3H8)", fuel_but: "Butan (C4H10)", fuel_coke: "Kokereigas",
+            s4_explain: "ℹ️ Erklärung: CO₂: Verlust = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. m³ → kW Umrechner", s5_sub: "für alle Gasarten",
+            s5_vol: "Volumen (m³/h)", s5_type: "Gasart", s5_eff: "Wirkungsgrad η (%)", s5_power: "Leistung =",
+            s5_note: "⚡ Berechnung: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Energiegehalt pro m³", th_gas: "Gasart",
+            gas_nat_std: "Erdgas (10,55 kWh/m³) [1]", gas_nat_hi: "Erdgas (10,63 kWh/m³) [2]", gas_nat_lo: "Erdgas (10,1 kWh/m³ – niedrig)",
+            gas_prop: "Propan (26 kWh/m³) [5]", gas_but: "Butan (28 kWh/m³) [5]", gas_lpg: "LPG (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG flüssig (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Kokereigas (5,0 kWh/m³)",
+            gas_nat_std_short: "Erdgas (Standard)", gas_nat_hi_short: "Erdgas (hoch)", gas_nat_lo_short: "Erdgas (niedrig)",
+            gas_prop_short: "Propan (Gas)", gas_but_short: "Butan (Gas)", gas_lpg_short: "LPG (Gas)", gas_lpg_liq_short: "LPG flüssig*", gas_coke_short: "Kokereigas",
+            s5_tableNote: "*LPG flüssig in Litern, umgerechnet in m³ Gas. Richtwerte.",
+            s5_explain: "ℹ️ So funktioniert es: Gasart und Volumen wählen. Leistung = Volumen × Energiegehalt × Wirkungsgrad.",
+            s6_title: "6. CO₂-Äquivalent · Auto · Bäume", s6_sub: "New York ⇄ Peking",
+            s6_flight: "Flugtyp", s6_retour: "Hin- und Rückflug (3.920 kg CO₂e)", s6_single: "Einfach (1.960 kg CO₂e)",
+            s6_car: "Auto-Emission (g CO₂/km)", s6_tree: "Baumaufnahme (kg CO₂/Jahr)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Äquivalentes Auto", s6_trees: "🌳 Äquivalente Bäume",
+            s6_explain: "ℹ️ Erklärung: CO₂e nach Atmosfair Economy NY–Peking. km = CO₂e ÷ Durchschnittsemission. Bäume = CO₂e ÷ Jahresaufnahme.",
+            s6_langTitle: "🌍 Alle Sprachen",
+            footer: "⚡ Nutzen Sie 📄 PDF für einen vollständigen Bericht (inkl. m³→kW und CO₂-Äquivalent)",
+            flight: "Flug", car: "Auto", trees: "Bäume", treesUnit: "Bäume/Jahr"
+        },
+        es: {
+            title: "⛽ Instalación de combustión de gas", subtitle: "📍 Nomograma + hojas de cálculo – todos los gases",
+            pdfBtn: "📄 Generar informe PDF",
+            s1_title: "1. Caudal de gas Vₙ", s1_sub: "m³/h (normal)",
+            s1_q: "Potencia caldera Q (kW)", s1_eta: "Rendimiento η (%)", s1_swn: "Poder calorífico Swn (kWh/m³)",
+            s1_explain: "ℹ️ Explicación: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Conversión de volumen Vₙ → VB", s2_sub: "estado de servicio",
+            s2_vn: "Caudal Vₙ (m³/h)", s2_temp: "Temperatura en el contador", s2_pgas: "Presión (relativa) Pgas", s2_alt: "Altitud",
+            s2_explain: "ℹ️ Explicación: VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Consumo por hora", s3_sub: "VB – tiempo – volumen",
+            s3_vb: "Caudal VB (m³/h)", s3_vol: "Volumen medido (litros)", s3_time: "Tiempo t (s)",
+            s3_calcTime: "Calcular tiempo ⏱️", s3_calcVol: "Calcular volumen 📊",
+            s3_explain: "ℹ️ Explicación: t (s) = (volumen L × 3,6) / VB, o volumen (L) = (VB × t) / 3,6.",
+            s4_title: "4. Rendimiento de combustión η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Tipo de combustible", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Porcentaje en humos", s4_dt: "Δt (humos − aire)",
+            fuel_nat: "Gas natural / gas ciudad", fuel_lpg: "Gas licuado (mezcla GLP)", fuel_prop: "Propano (C3H8)", fuel_but: "Butano (C4H10)", fuel_coke: "Gas de coquería",
+            s4_explain: "ℹ️ Explicación: CO₂: pérdida = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. Convertidor m³ → kW", s5_sub: "para todos los gases",
+            s5_vol: "Volumen (m³/h)", s5_type: "Tipo de gas", s5_eff: "Rendimiento η (%)", s5_power: "Potencia =",
+            s5_note: "⚡ Cálculo: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Contenido energético por m³", th_gas: "Tipo de gas",
+            gas_nat_std: "Gas natural (10,55 kWh/m³) [1]", gas_nat_hi: "Gas natural (10,63 kWh/m³) [2]", gas_nat_lo: "Gas natural (10,1 kWh/m³ – bajo)",
+            gas_prop: "Propano (26 kWh/m³) [5]", gas_but: "Butano (28 kWh/m³) [5]", gas_lpg: "GLP (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "GLP líquido (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Gas de coquería (5,0 kWh/m³)",
+            gas_nat_std_short: "Gas natural (estándar)", gas_nat_hi_short: "Gas natural (alto)", gas_nat_lo_short: "Gas natural (bajo)",
+            gas_prop_short: "Propano (gas)", gas_but_short: "Butano (gas)", gas_lpg_short: "GLP (gas)", gas_lpg_liq_short: "GLP líquido*", gas_coke_short: "Gas de coquería",
+            s5_tableNote: "*GLP líquido en litros convertido a m³ de gas. Valores indicativos.",
+            s5_explain: "ℹ️ Cómo funciona: elija gas y volumen. Potencia = volumen × contenido energético × rendimiento.",
+            s6_title: "6. Equivalente CO₂ · coche · árboles", s6_sub: "Nueva York ⇄ Pekín",
+            s6_flight: "Tipo de vuelo", s6_retour: "Ida y vuelta (3.920 kg CO₂e)", s6_single: "Solo ida (1.960 kg CO₂e)",
+            s6_car: "Emisión coche (g CO₂/km)", s6_tree: "Absorción árbol (kg CO₂/año)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Coche equivalente", s6_trees: "🌳 Árboles equivalentes",
+            s6_explain: "ℹ️ Explicación: CO₂e según Atmosfair economy NY–Pekín. km = CO₂e ÷ emisión media. Árboles = CO₂e ÷ absorción anual.",
+            s6_langTitle: "🌍 Todos los idiomas",
+            footer: "⚡ Use 📄 PDF para un informe completo (m³→kW y equivalente CO₂)",
+            flight: "Vuelo", car: "Coche", trees: "Árboles", treesUnit: "árboles/año"
+        },
+        it: {
+            title: "⛽ Impianto di combustione a gas", subtitle: "📍 Nomogramma + fogli di calcolo – tutti i gas",
+            pdfBtn: "📄 Genera rapporto PDF",
+            s1_title: "1. Portata gas Vₙ", s1_sub: "m³/h (normale)",
+            s1_q: "Potenza caldaia Q (kW)", s1_eta: "Rendimento η (%)", s1_swn: "Potere calorifico Swn (kWh/m³)",
+            s1_explain: "ℹ️ Spiegazione: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Conversione volume Vₙ → VB", s2_sub: "stato di esercizio",
+            s2_vn: "Portata Vₙ (m³/h)", s2_temp: "Temperatura al contatore", s2_pgas: "Pressione (relativa) Pgas", s2_alt: "Altitudine",
+            s2_explain: "ℹ️ Spiegazione: VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Consumo orario", s3_sub: "VB – tempo – volume",
+            s3_vb: "Portata VB (m³/h)", s3_vol: "Volume misurato (litri)", s3_time: "Tempo t (s)",
+            s3_calcTime: "Calcola tempo ⏱️", s3_calcVol: "Calcola volume 📊",
+            s3_explain: "ℹ️ Spiegazione: t (s) = (volume L × 3,6) / VB, o volume (L) = (VB × t) / 3,6.",
+            s4_title: "4. Rendimento di combustione η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Tipo di combustibile", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Percentuale nei fumi", s4_dt: "Δt (fumi − aria)",
+            fuel_nat: "Gas naturale / gas di città", fuel_lpg: "Gas liquefatto (miscela GPL)", fuel_prop: "Propano (C3H8)", fuel_but: "Butano (C4H10)", fuel_coke: "Gas di cokeria",
+            s4_explain: "ℹ️ Spiegazione: CO₂: perdita = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. Convertitore m³ → kW", s5_sub: "per tutti i gas",
+            s5_vol: "Volume (m³/h)", s5_type: "Tipo di gas", s5_eff: "Rendimento η (%)", s5_power: "Potenza =",
+            s5_note: "⚡ Calcolo: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Contenuto energetico per m³", th_gas: "Tipo di gas",
+            gas_nat_std: "Gas naturale (10,55 kWh/m³) [1]", gas_nat_hi: "Gas naturale (10,63 kWh/m³) [2]", gas_nat_lo: "Gas naturale (10,1 kWh/m³ – basso)",
+            gas_prop: "Propano (26 kWh/m³) [5]", gas_but: "Butano (28 kWh/m³) [5]", gas_lpg: "GPL (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "GPL liquido (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Gas di cokeria (5,0 kWh/m³)",
+            gas_nat_std_short: "Gas naturale (standard)", gas_nat_hi_short: "Gas naturale (alto)", gas_nat_lo_short: "Gas naturale (basso)",
+            gas_prop_short: "Propano (gas)", gas_but_short: "Butano (gas)", gas_lpg_short: "GPL (gas)", gas_lpg_liq_short: "GPL liquido*", gas_coke_short: "Gas di cokeria",
+            s5_tableNote: "*GPL liquido in litri convertito in m³ di gas. Valori indicativi.",
+            s5_explain: "ℹ️ Come funziona: scegli gas e volume. Potenza = volume × contenuto energetico × rendimento.",
+            s6_title: "6. Equivalente CO₂ · auto · alberi", s6_sub: "New York ⇄ Pechino",
+            s6_flight: "Tipo di volo", s6_retour: "Andata e ritorno (3.920 kg CO₂e)", s6_single: "Solo andata (1.960 kg CO₂e)",
+            s6_car: "Emissione auto (g CO₂/km)", s6_tree: "Assorbimento albero (kg CO₂/anno)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Auto equivalente", s6_trees: "🌳 Alberi equivalenti",
+            s6_explain: "ℹ️ Spiegazione: CO₂e secondo Atmosfair economy NY–Pechino. km = CO₂e ÷ emissione media. Alberi = CO₂e ÷ assorbimento annuo.",
+            s6_langTitle: "🌍 Tutte le lingue",
+            footer: "⚡ Usa 📄 PDF per un rapporto completo (m³→kW ed equivalente CO₂)",
+            flight: "Volo", car: "Auto", trees: "Alberi", treesUnit: "alberi/anno"
+        },
+        ru: {
+            title: "⛽ Газосжигающая установка", subtitle: "📍 Номограмма + расчётные листы – все газы",
+            pdfBtn: "📄 Создать PDF-отчёт",
+            s1_title: "1. Расход газа Vₙ", s1_sub: "м³/ч (нормальные)",
+            s1_q: "Мощность котла Q (кВт)", s1_eta: "КПД η (%)", s1_swn: "Теплота сгорания Swn (кВт·ч/м³)",
+            s1_explain: "ℹ️ Пояснение: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Пересчёт объёма Vₙ → VB", s2_sub: "рабочее состояние",
+            s2_vn: "Расход Vₙ (м³/ч)", s2_temp: "Температура у счётчика", s2_pgas: "Давление (избыт.) Pgas", s2_alt: "Высота над уровнем моря",
+            s2_explain: "ℹ️ Пояснение: VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Расход газа в час", s3_sub: "VB – время – объём",
+            s3_vb: "Расход VB (м³/ч)", s3_vol: "Измеренный объём (л)", s3_time: "Время t (с)",
+            s3_calcTime: "Рассчитать время ⏱️", s3_calcVol: "Рассчитать объём 📊",
+            s3_explain: "ℹ️ Пояснение: t (с) = (объём л × 3,6) / VB, или объём (л) = (VB × t) / 3,6.",
+            s4_title: "4. КПД сгорания η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Тип топлива", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Процент в дымовых газах", s4_dt: "Δt (дым − воздух)",
+            fuel_nat: "Природный / городской газ", fuel_lpg: "Сжиженный газ (СУГ)", fuel_prop: "Пропан (C3H8)", fuel_but: "Бутан (C4H10)", fuel_coke: "Коксовый газ",
+            s4_explain: "ℹ️ Пояснение: CO₂: потери = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. Конвертер м³ → кВт", s5_sub: "для всех газов",
+            s5_vol: "Объём (м³/ч)", s5_type: "Тип газа", s5_eff: "КПД η (%)", s5_power: "Мощность =",
+            s5_note: "⚡ Расчёт: (м³/ч) × (кВт·ч/м³) × (η/100) = кВт",
+            s5_tableTitle: "📊 Энергосодержание на м³", th_gas: "Тип газа",
+            gas_nat_std: "Природный газ (10,55 кВт·ч/м³) [1]", gas_nat_hi: "Природный газ (10,63 кВт·ч/м³) [2]", gas_nat_lo: "Природный газ (10,1 кВт·ч/м³ – низк.)",
+            gas_prop: "Пропан (26 кВт·ч/м³) [5]", gas_but: "Бутан (28 кВт·ч/м³) [5]", gas_lpg: "СУГ (26,1 кВт·ч/м³) [5]",
+            gas_lpg_liq: "СУГ жидкий (24 МДж/л → 15,3 кВт·ч/м³)* [8]", gas_coke: "Коксовый газ (5,0 кВт·ч/м³)",
+            gas_nat_std_short: "Природный газ (станд.)", gas_nat_hi_short: "Природный газ (выс.)", gas_nat_lo_short: "Природный газ (низк.)",
+            gas_prop_short: "Пропан (газ)", gas_but_short: "Бутан (газ)", gas_lpg_short: "СУГ (газ)", gas_lpg_liq_short: "СУГ жидкий*", gas_coke_short: "Коксовый газ",
+            s5_tableNote: "*СУГ жидкий в литрах, пересчитан в м³ газа. Ориентировочные значения.",
+            s5_explain: "ℹ️ Как работает: выберите газ и объём. Мощность = объём × энергосодержание × КПД.",
+            s6_title: "6. Эквивалент CO₂ · авто · деревья", s6_sub: "Нью-Йорк ⇄ Пекин",
+            s6_flight: "Тип полёта", s6_retour: "Туда и обратно (3 920 кг CO₂e)", s6_single: "В одну сторону (1 960 кг CO₂e)",
+            s6_car: "Выбросы авто (г CO₂/км)", s6_tree: "Поглощение дерева (кг CO₂/год)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Эквивалент авто", s6_trees: "🌳 Эквивалент деревьев",
+            s6_explain: "ℹ️ Пояснение: CO₂e по Atmosfair economy Нью-Йорк–Пекин. км = CO₂e ÷ средний выброс. Деревья = CO₂e ÷ годовое поглощение.",
+            s6_langTitle: "🌍 Все языки",
+            footer: "⚡ Используйте 📄 PDF для полного отчёта (м³→кВт и эквивалент CO₂)",
+            flight: "Полёт", car: "Авто", trees: "Деревья", treesUnit: "деревьев/год"
+        },
+        no: {
+            title: "⛽ Gassforbrenningsanlegg", subtitle: "📍 Nomogram + regneark – alle gasstyper",
+            pdfBtn: "📄 Generer PDF-rapport",
+            s1_title: "1. Gassstrømning Vₙ", s1_sub: "m³/h (normal)",
+            s1_q: "Kjeleeffekt Q (kW)", s1_eta: "Virkningsgrad η (%)", s1_swn: "Brennverdi Swn (kWh/m³)",
+            s1_explain: "ℹ️ Forklaring: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Volumkonvertering Vₙ → VB", s2_sub: "driftstilstand",
+            s2_vn: "Gassstrømning Vₙ (m³/h)", s2_temp: "Gasstemperatur ved måler", s2_pgas: "Gasstrykk (overtrykk) Pgas", s2_alt: "Høyde over havet",
+            s2_explain: "ℹ️ Forklaring: VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Gassforbruk per time", s3_sub: "VB – tid – volum",
+            s3_vb: "Gassstrømning VB (m³/h)", s3_vol: "Målt volum (liter)", s3_time: "Måletid t (s)",
+            s3_calcTime: "Beregn tid ⏱️", s3_calcVol: "Beregn volum 📊",
+            s3_explain: "ℹ️ Forklaring: t (s) = (volum L × 3,6) / VB, eller volum (L) = (VB × t) / 3,6.",
+            s4_title: "4. Forbrenningsvirkningsgrad η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Drivstofftype", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Prosent i røykgass", s4_dt: "Δt (røyk − luft)",
+            fuel_nat: "Naturgass / bygass", fuel_lpg: "Flytende gass (LPG-blanding)", fuel_prop: "Propan (C3H8)", fuel_but: "Butan (C4H10)", fuel_coke: "Koksgass",
+            s4_explain: "ℹ️ Forklaring: CO₂: tap = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. m³ → kW-konverterer", s5_sub: "for alle gasstyper",
+            s5_vol: "Volum (m³/h)", s5_type: "Gasstype", s5_eff: "Virkningsgrad η (%)", s5_power: "Effekt =",
+            s5_note: "⚡ Beregning: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Energiinnhold per m³", th_gas: "Gasstype",
+            gas_nat_std: "Naturgass (10,55 kWh/m³) [1]", gas_nat_hi: "Naturgass (10,63 kWh/m³) [2]", gas_nat_lo: "Naturgass (10,1 kWh/m³ – lav)",
+            gas_prop: "Propan (26 kWh/m³) [5]", gas_but: "Butan (28 kWh/m³) [5]", gas_lpg: "LPG (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG flytende (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Koksgass (5,0 kWh/m³)",
+            gas_nat_std_short: "Naturgass (standard)", gas_nat_hi_short: "Naturgass (høy)", gas_nat_lo_short: "Naturgass (lav)",
+            gas_prop_short: "Propan (gass)", gas_but_short: "Butan (gass)", gas_lpg_short: "LPG (gass)", gas_lpg_liq_short: "LPG flytende*", gas_coke_short: "Koksgass",
+            s5_tableNote: "*LPG flytende i liter omregnet til m³ gass. Veiledende verdier.",
+            s5_explain: "ℹ️ Slik fungerer det: velg gasstype og volum. Effekt = volum × energiinnhold × virkningsgrad.",
+            s6_title: "6. CO₂-ekvivalent · bil · trær", s6_sub: "New York ⇄ Beijing",
+            s6_flight: "Flytype", s6_retour: "Tur/retur (3 920 kg CO₂e)", s6_single: "Enkel (1 960 kg CO₂e)",
+            s6_car: "Bilutslipp (g CO₂/km)", s6_tree: "Treopptak (kg CO₂/år)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Tilsvarende bil", s6_trees: "🌳 Tilsvarende trær",
+            s6_explain: "ℹ️ Forklaring: CO₂e etter Atmosfair economy NY–Beijing. km = CO₂e ÷ gjennomsnittsutslipp. Trær = CO₂e ÷ årlig opptak.",
+            s6_langTitle: "🌍 Alle språk",
+            footer: "⚡ Bruk 📄 PDF for en fullstendig rapport (inkl. m³→kW og CO₂-ekvivalent)",
+            flight: "Fly", car: "Bil", trees: "Trær", treesUnit: "trær/år"
+        },
+        sv: {
+            title: "⛽ Gasförbränningsanläggning", subtitle: "📍 Nomogram + kalkylblad – alla gastyper",
+            pdfBtn: "📄 Skapa PDF-rapport",
+            s1_title: "1. Gasflöde Vₙ", s1_sub: "m³/h (normal)",
+            s1_q: "Panneffekt Q (kW)", s1_eta: "Verkningsgrad η (%)", s1_swn: "Värmevärde Swn (kWh/m³)",
+            s1_explain: "ℹ️ Förklaring: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. Volymomvandling Vₙ → VB", s2_sub: "driftstillstånd",
+            s2_vn: "Gasflöde Vₙ (m³/h)", s2_temp: "Gastemperatur vid mätaren", s2_pgas: "Gastryck (övertryck) Pgas", s2_alt: "Höjd över havet",
+            s2_explain: "ℹ️ Förklaring: VB = Vₙ × (1013,25 / Pabs) × ((T+273,15)/273,15).",
+            s3_title: "3. Gasförbrukning per timme", s3_sub: "VB – tid – volym",
+            s3_vb: "Gasflöde VB (m³/h)", s3_vol: "Uppmätt volym (liter)", s3_time: "Mättid t (s)",
+            s3_calcTime: "Beräkna tid ⏱️", s3_calcVol: "Beräkna volym 📊",
+            s3_explain: "ℹ️ Förklaring: t (s) = (volym L × 3,6) / VB, eller volym (L) = (VB × t) / 3,6.",
+            s4_title: "4. Förbränningsverkningsgrad η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "Bränsletyp", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "Procent i rökgas", s4_dt: "Δt (rök − luft)",
+            fuel_nat: "Naturgas / stadsgas", fuel_lpg: "Flytande gas (LPG-blandning)", fuel_prop: "Propan (C3H8)", fuel_but: "Butan (C4H10)", fuel_coke: "Koksgas",
+            s4_explain: "ℹ️ Förklaring: CO₂: förlust = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20,9 − O₂)/20,9.",
+            s5_title: "5. m³ → kW-omvandlare", s5_sub: "för alla gastyper",
+            s5_vol: "Volym (m³/h)", s5_type: "Gastyp", s5_eff: "Verkningsgrad η (%)", s5_power: "Effekt =",
+            s5_note: "⚡ Beräkning: (m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 Energiinnehåll per m³", th_gas: "Gastyp",
+            gas_nat_std: "Naturgas (10,55 kWh/m³) [1]", gas_nat_hi: "Naturgas (10,63 kWh/m³) [2]", gas_nat_lo: "Naturgas (10,1 kWh/m³ – låg)",
+            gas_prop: "Propan (26 kWh/m³) [5]", gas_but: "Butan (28 kWh/m³) [5]", gas_lpg: "LPG (26,1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG flytande (24 MJ/l → 15,3 kWh/m³)* [8]", gas_coke: "Koksgas (5,0 kWh/m³)",
+            gas_nat_std_short: "Naturgas (standard)", gas_nat_hi_short: "Naturgas (hög)", gas_nat_lo_short: "Naturgas (låg)",
+            gas_prop_short: "Propan (gas)", gas_but_short: "Butan (gas)", gas_lpg_short: "LPG (gas)", gas_lpg_liq_short: "LPG flytande*", gas_coke_short: "Koksgas",
+            s5_tableNote: "*LPG flytande i liter omräknat till m³ gas. Vägledande värden.",
+            s5_explain: "ℹ️ Så fungerar det: välj gastyp och volym. Effekt = volym × energiinnehåll × verkningsgrad.",
+            s6_title: "6. CO₂-ekvivalent · bil · träd", s6_sub: "New York ⇄ Peking",
+            s6_flight: "Flygtyp", s6_retour: "Tur och retur (3 920 kg CO₂e)", s6_single: "Enkel (1 960 kg CO₂e)",
+            s6_car: "Bilutsläpp (g CO₂/km)", s6_tree: "Trädupptag (kg CO₂/år)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 Motsvarande bil", s6_trees: "🌳 Motsvarande träd",
+            s6_explain: "ℹ️ Förklaring: CO₂e enligt Atmosfair economy NY–Peking. km = CO₂e ÷ medelutsläpp. Träd = CO₂e ÷ årligt upptag.",
+            s6_langTitle: "🌍 Alla språk",
+            footer: "⚡ Använd 📄 PDF för en fullständig rapport (inkl. m³→kW och CO₂-ekvivalent)",
+            flight: "Flyg", car: "Bil", trees: "Träd", treesUnit: "träd/år"
+        },
+        zh: {
+            title: "⛽ 燃气燃烧装置", subtitle: "📍 诺模图 + 计算表 – 所有气体类型",
+            pdfBtn: "📄 生成 PDF 报告",
+            s1_title: "1. 燃气流量 Vₙ", s1_sub: "m³/h（标准）",
+            s1_q: "锅炉功率 Q (kW)", s1_eta: "运行效率 η (%)", s1_swn: "热值 Swn (kWh/m³)",
+            s1_explain: "ℹ️ 说明：Vₙ = Q / (Swn × η/100)。",
+            s2_title: "2. 体积换算 Vₙ → VB", s2_sub: "运行状态",
+            s2_vn: "燃气流量 Vₙ (m³/h)", s2_temp: "表处燃气温度", s2_pgas: "燃气压力（表压）Pgas", s2_alt: "海拔高度",
+            s2_explain: "ℹ️ 说明：VB = Vₙ × (1013.25 / Pabs) × ((T+273.15)/273.15)。",
+            s3_title: "3. 每小时燃气消耗", s3_sub: "VB – 时间 – 体积",
+            s3_vb: "燃气流量 VB (m³/h)", s3_vol: "测量体积（升）", s3_time: "测量时间 t (s)",
+            s3_calcTime: "计算时间 ⏱️", s3_calcVol: "计算体积 📊",
+            s3_explain: "ℹ️ 说明：t (s) = (体积 L × 3.6) / VB，或 体积 (L) = (VB × t) / 3.6。",
+            s4_title: "4. 燃烧效率 η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "燃料类型", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "烟气中百分比", s4_dt: "Δt（烟气 − 进气）",
+            fuel_nat: "天然气 / 城市燃气", fuel_lpg: "液化气（LPG 混合）", fuel_prop: "丙烷 (C3H8)", fuel_but: "丁烷 (C4H10)", fuel_coke: "焦炉煤气",
+            s4_explain: "ℹ️ 说明：CO₂：损失 = (K × Δt)/CO₂。O₂：CO₂eq = maxCO₂ × (20.9 − O₂)/20.9。",
+            s5_title: "5. m³ 转 kW 转换器", s5_sub: "适用于所有气体类型",
+            s5_vol: "体积 (m³/h)", s5_type: "气体类型", s5_eff: "效率 η (%)", s5_power: "功率 =",
+            s5_note: "⚡ 计算：(m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 每 m³ 能量含量", th_gas: "气体类型",
+            gas_nat_std: "天然气 (10.55 kWh/m³) [1]", gas_nat_hi: "天然气 (10.63 kWh/m³) [2]", gas_nat_lo: "天然气 (10.1 kWh/m³ – 低热值)",
+            gas_prop: "丙烷 (26 kWh/m³) [5]", gas_but: "丁烷 (28 kWh/m³) [5]", gas_lpg: "LPG (26.1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG 液体 (24 MJ/l → 15.3 kWh/m³)* [8]", gas_coke: "焦炉煤气 (5.0 kWh/m³)",
+            gas_nat_std_short: "天然气（标准）", gas_nat_hi_short: "天然气（高热值）", gas_nat_lo_short: "天然气（低热值）",
+            gas_prop_short: "丙烷（气）", gas_but_short: "丁烷（气）", gas_lpg_short: "LPG（气）", gas_lpg_liq_short: "LPG 液体*", gas_coke_short: "焦炉煤气",
+            s5_tableNote: "*LPG 液体按升换算为 m³ 气体。指示值。",
+            s5_explain: "ℹ️ 工作原理：选择气体类型和体积。功率 = 体积 × 能量含量 × 效率。",
+            s6_title: "6. CO₂ 当量 · 汽车 · 树木", s6_sub: "纽约 ⇄ 北京",
+            s6_flight: "航班类型", s6_retour: "往返（3,920 kg CO₂e）", s6_single: "单程（1,960 kg CO₂e）",
+            s6_car: "汽车排放 (g CO₂/km)", s6_tree: "树木吸收 (kg CO₂/年)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 等效汽车", s6_trees: "🌳 等效树木",
+            s6_explain: "ℹ️ 说明：CO₂e 基于 Atmosfair 经济舱 纽约–北京。km = CO₂e ÷ 平均排放。树木 = CO₂e ÷ 年吸收量。",
+            s6_langTitle: "🌍 所有语言",
+            footer: "⚡ 使用 📄 PDF 获取完整报告（含 m³→kW 和 CO₂ 当量）",
+            flight: "航班", car: "汽车", trees: "树木", treesUnit: "棵/年"
+        },
+        ja: {
+            title: "⛽ ガス燃焼設備", subtitle: "📍 ノモグラム + 計算シート – すべてのガス種",
+            pdfBtn: "📄 PDFレポートを生成",
+            s1_title: "1. ガス流量 Vₙ", s1_sub: "m³/h（標準）",
+            s1_q: "ボイラー出力 Q (kW)", s1_eta: "運転効率 η (%)", s1_swn: "発熱量 Swn (kWh/m³)",
+            s1_explain: "ℹ️ 説明：Vₙ = Q / (Swn × η/100)。",
+            s2_title: "2. 体積換算 Vₙ → VB", s2_sub: "運転状態",
+            s2_vn: "ガス流量 Vₙ (m³/h)", s2_temp: "メーターでのガス温度", s2_pgas: "ガス圧力（ゲージ）Pgas", s2_alt: "海抜高度",
+            s2_explain: "ℹ️ 説明：VB = Vₙ × (1013.25 / Pabs) × ((T+273.15)/273.15)。",
+            s3_title: "3. 1時間あたりのガス消費", s3_sub: "VB – 時間 – 体積",
+            s3_vb: "ガス流量 VB (m³/h)", s3_vol: "測定体積（リットル）", s3_time: "測定時間 t (s)",
+            s3_calcTime: "時間を計算 ⏱️", s3_calcVol: "体積を計算 📊",
+            s3_explain: "ℹ️ 説明：t (s) = (体積 L × 3.6) / VB、または 体積 (L) = (VB × t) / 3.6。",
+            s4_title: "4. 燃焼効率 η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "燃料タイプ", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "排ガス中の割合", s4_dt: "Δt（排ガス − 吸気）",
+            fuel_nat: "天然ガス / 都市ガス", fuel_lpg: "液化ガス（LPG混合）", fuel_prop: "プロパン (C3H8)", fuel_but: "ブタン (C4H10)", fuel_coke: "コークス炉ガス",
+            s4_explain: "ℹ️ 説明：CO₂：損失 = (K × Δt)/CO₂。O₂：CO₂eq = maxCO₂ × (20.9 − O₂)/20.9。",
+            s5_title: "5. m³ → kW 変換器", s5_sub: "すべてのガス種に対応",
+            s5_vol: "体積 (m³/h)", s5_type: "ガス種", s5_eff: "効率 η (%)", s5_power: "出力 =",
+            s5_note: "⚡ 計算：(m³/h) × (kWh/m³) × (η/100) = kW",
+            s5_tableTitle: "📊 m³あたりのエネルギー含有量", th_gas: "ガス種",
+            gas_nat_std: "天然ガス (10.55 kWh/m³) [1]", gas_nat_hi: "天然ガス (10.63 kWh/m³) [2]", gas_nat_lo: "天然ガス (10.1 kWh/m³ – 低)",
+            gas_prop: "プロパン (26 kWh/m³) [5]", gas_but: "ブタン (28 kWh/m³) [5]", gas_lpg: "LPG (26.1 kWh/m³) [5]",
+            gas_lpg_liq: "LPG液体 (24 MJ/l → 15.3 kWh/m³)* [8]", gas_coke: "コークス炉ガス (5.0 kWh/m³)",
+            gas_nat_std_short: "天然ガス（標準）", gas_nat_hi_short: "天然ガス（高）", gas_nat_lo_short: "天然ガス（低）",
+            gas_prop_short: "プロパン（ガス）", gas_but_short: "ブタン（ガス）", gas_lpg_short: "LPG（ガス）", gas_lpg_liq_short: "LPG液体*", gas_coke_short: "コークス炉ガス",
+            s5_tableNote: "*LPG液体をリットルからm³ガスに換算。参考値。",
+            s5_explain: "ℹ️ 仕組み：ガス種と体積を選択。出力 = 体積 × エネルギー含有量 × 効率。",
+            s6_title: "6. CO₂換算 · 自動車 · 樹木", s6_sub: "ニューヨーク ⇄ 北京",
+            s6_flight: "フライトタイプ", s6_retour: "往復（3,920 kg CO₂e）", s6_single: "片道（1,960 kg CO₂e）",
+            s6_car: "自動車排出 (g CO₂/km)", s6_tree: "樹木吸収 (kg CO₂/年)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 自動車換算", s6_trees: "🌳 樹木換算",
+            s6_explain: "ℹ️ 説明：CO₂e は Atmosfair エコノミー ニューヨーク–北京に基づく。km = CO₂e ÷ 平均排出。樹木 = CO₂e ÷ 年間吸収。",
+            s6_langTitle: "🌍 すべての言語",
+            footer: "⚡ 📄 PDFで完全なレポートを取得（m³→kWとCO₂換算を含む）",
+            flight: "フライト", car: "自動車", trees: "樹木", treesUnit: "本/年"
+        },
+        ar: {
+            title: "⛽ منشأة احتراق الغاز", subtitle: "📍 مخطط بياني + أوراق حساب – جميع أنواع الغاز",
+            pdfBtn: "📄 إنشاء تقرير PDF",
+            s1_title: "1. تدفق الغاز Vₙ", s1_sub: "م³/س (قياسي)",
+            s1_q: "قدرة المرجل Q (كيلوواط)", s1_eta: "كفاءة التشغيل η (%)", s1_swn: "القيمة الحرارية Swn (كيلوواط ساعة/م³)",
+            s1_explain: "ℹ️ الشرح: Vₙ = Q / (Swn × η/100).",
+            s2_title: "2. تحويل الحجم Vₙ → VB", s2_sub: "حالة التشغيل",
+            s2_vn: "تدفق الغاز Vₙ (م³/س)", s2_temp: "درجة حرارة الغاز عند العداد", s2_pgas: "ضغط الغاز (نسبي) Pgas", s2_alt: "الارتفاع عن سطح البحر",
+            s2_explain: "ℹ️ الشرح: VB = Vₙ × (1013.25 / Pabs) × ((T+273.15)/273.15).",
+            s3_title: "3. استهلاك الغاز في الساعة", s3_sub: "VB – الوقت – الحجم",
+            s3_vb: "تدفق الغاز VB (م³/س)", s3_vol: "الحجم المقاس (لتر)", s3_time: "زمن القياس t (ث)",
+            s3_calcTime: "احسب الوقت ⏱️", s3_calcVol: "احسب الحجم 📊",
+            s3_explain: "ℹ️ الشرح: t (ث) = (الحجم لتر × 3.6) / VB، أو الحجم (لتر) = (VB × t) / 3.6.",
+            s4_title: "4. كفاءة الاحتراق η", s4_sub: "CO₂ / O₂ + Δt",
+            s4_fuel: "نوع الوقود", s4_co2: "CO₂ %", s4_o2: "O₂ %", s4_perc: "النسبة في غاز المداخن", s4_dt: "Δt (المداخن − الهواء)",
+            fuel_nat: "غاز طبيعي / غاز المدينة", fuel_lpg: "غاز مسال (خليط LPG)", fuel_prop: "بروبان (C3H8)", fuel_but: "بوتان (C4H10)", fuel_coke: "غاز أفران الكوك",
+            s4_explain: "ℹ️ الشرح: CO₂: الفقد = (K × Δt)/CO₂. O₂: CO₂eq = maxCO₂ × (20.9 − O₂)/20.9.",
+            s5_title: "5. محول m³ إلى كيلوواط", s5_sub: "لجميع أنواع الغاز",
+            s5_vol: "الحجم (م³/س)", s5_type: "نوع الغاز", s5_eff: "الكفاءة η (%)", s5_power: "القدرة =",
+            s5_note: "⚡ الحساب: (م³/س) × (كيلوواط ساعة/م³) × (η/100) = كيلوواط",
+            s5_tableTitle: "📊 محتوى الطاقة لكل م³", th_gas: "نوع الغاز",
+            gas_nat_std: "غاز طبيعي (10.55 كيلوواط ساعة/م³) [1]", gas_nat_hi: "غاز طبيعي (10.63 كيلوواط ساعة/م³) [2]", gas_nat_lo: "غاز طبيعي (10.1 كيلوواط ساعة/م³ – منخفض)",
+            gas_prop: "بروبان (26 كيلوواط ساعة/م³) [5]", gas_but: "بوتان (28 كيلوواط ساعة/م³) [5]", gas_lpg: "LPG (26.1 كيلوواط ساعة/م³) [5]",
+            gas_lpg_liq: "LPG سائل (24 ميغاجول/لتر → 15.3 كيلوواط ساعة/م³)* [8]", gas_coke: "غاز أفران الكوك (5.0 كيلوواط ساعة/م³)",
+            gas_nat_std_short: "غاز طبيعي (قياسي)", gas_nat_hi_short: "غاز طبيعي (عالي)", gas_nat_lo_short: "غاز طبيعي (منخفض)",
+            gas_prop_short: "بروبان (غاز)", gas_but_short: "بوتان (غاز)", gas_lpg_short: "LPG (غاز)", gas_lpg_liq_short: "LPG سائل*", gas_coke_short: "غاز أفران الكوك",
+            s5_tableNote: "*LPG سائل باللتر محول إلى م³ غاز. قيم إرشادية.",
+            s5_explain: "ℹ️ كيف يعمل: اختر نوع الغاز والحجم. القدرة = الحجم × محتوى الطاقة × الكفاءة.",
+            s6_title: "6. مكافئ CO₂ · السيارة · الأشجار", s6_sub: "نيويورك ⇄ بكين",
+            s6_flight: "نوع الرحلة", s6_retour: "ذهاب وعودة (3,920 كجم CO₂e)", s6_single: "ذهاب فقط (1,960 كجم CO₂e)",
+            s6_car: "انبعاث السيارة (جم CO₂/كم)", s6_tree: "امتصاص الشجرة (كجم CO₂/سنة)",
+            s6_co2e: "✈️ CO₂e =", s6_carkm: "🚗 سيارة مكافئة", s6_trees: "🌳 أشجار مكافئة",
+            s6_explain: "ℹ️ الشرح: CO₂e وفق Atmosfair اقتصاد نيويورك–بكين. كم = CO₂e ÷ متوسط الانبعاث. الأشجار = CO₂e ÷ الامتصاص السنوي.",
+            s6_langTitle: "🌍 جميع اللغات",
+            footer: "⚡ استخدم 📄 PDF للحصول على تقرير كامل (بما في ذلك m³→kW ومكافئ CO₂)",
+            flight: "رحلة", car: "سيارة", trees: "أشجار", treesUnit: "شجرة/سنة"
+        }
+    };
 
-// ====== EENVOUDIGE TRANSLATIONS (EN fallback) ======
-const translations = {
-  en: {
-    title: APP_NAME,
-    headerTitle: "🔥 " + APP_NAME,
-    headerSmall: "LPG · propane · butane · nomogram",
-    headerSub: "📐 flow rate, volume conversion, efficiency + full load hours per building type",
-    pdfBtnText: "PDF report",
-    card1Title: "1. Gas flow Vₙ",
-    card1Sub: "(normal m³/h)",
-    lblQ: "Boiler power Q (kW)",
-    lblEta1: "Efficiency η (%)",
-    lblSwn: "Calorific value S<sub>wn</sub> (kWh/m³)",
-    result1Label: "📊 Vₙ =",
-    note1: "💡 Vₙ = Q / (Swn × (η/100))<br>⏺ example: 115 kW, 90%, 9.8 kWh/m³ → 13.04 m³/h",
-    card2Title: "2. Conversion Vₙ → V<sub>B</sub>",
-    card2Sub: "(operating flow)",
-    lblVn2: "Gas flow Vₙ (m³/h)",
-    lblTemp: "Gas temperature at meter",
-    lblPgas: "Gas overpressure P<sub>gas</sub>",
-    lblAlt: "Altitude above sea level",
-    result2Label: "🌡️ V<sub>B</sub> =",
-    note2: "📍 air pressure calculated from altitude; standard 1013.25 mbar, 0°C → Vb = Vn × (Pn/Pabs) × (Tb/Tn)",
-    card3Title: "3. Consumption & time",
-    card3Sub: "V<sub>B</sub> → liters / seconds",
-    lblVb3: "Gas flow V<sub>B</sub> (m³/h)",
-    lblVolLiter: "Measured volume (liters)",
-    lblTimeSec: "Measurement time t (s)",
-    btnCalcTime: "Calculate time",
-    btnCalcVolume: "Calculate volume",
-    result3Time: "⏲️ t =",
-    result3Volume: "📦 Volume =",
-    note3: "⚙️ Vb=15 m³/h, 300 liters → t = 72.0 s | relation: Vb (m³/h) = (liters × 3.6) / t (s)",
-    card4Title: "4. Combustion efficiency η",
-    card4Sub: "(nomogram / Weisschaut)",
-    lblFuel: "Fuel type",
-    optAardgas: "Natural gas / town gas",
-    optVloeibaar: "Liquid gas (LPG mixture)",
-    optPropaan: "Propane (C3H8)",
-    optButaan: "Butane (C4H10)",
-    optCokes: "Coke gas / blast furnace gas",
-    lblCo2: "📊 CO₂ %",
-    lblO2: "💨 O₂ %",
-    lblPerc: "Flue gas percentage (CO₂ or O₂)",
-    lblDt: "Δt (flue gas − intake air)",
-    result4Label: "🔥 Combustion efficiency η =",
-    note4: "✅ <strong>Propane/butane/LPG-specific K-coefficients</strong> built in.<br>📌 example: propane O₂=3% Δt=160K → η ≈ 92.6%",
-    card5Title: "📅 Full load hours per building type",
-    card5Sub: "(reference values for energy calculation)",
-    thBuilding: "🏢 Building function",
-    thHours: "⏱️ Full load hours / year (range)",
-    thNote: "📘 Explanation",
-    row1b: "🏥 Care homes",
-    row1n: "Continuous heat demand, care institutions",
-    row2b: "🏨 Hospitals",
-    row2n: "Very high heat load, 24/7 operation",
-    row3b: "🏢 Offices",
-    row3n: "Depends on insulation and usage hours",
-    row4b: "🏫 Schools",
-    row4n: "Heating season + daily rhythm",
-    row5b: "🏠 Dwellings",
-    row5n: "Average Dutch home",
-    row6b: "🏭 Other (industry, hospitality, etc.)",
-    row6n: "Process heat dependent",
-    unitHours: "hours/year",
-    note5: "💡 <strong>Tip:</strong> Multiply the nominal boiler power (kW) by the full load hours for an estimate of annual gas consumption (kWh/year).<br>📐 Example: 100 kW boiler in an office with 1200 full load hours → 120,000 kWh/year → approx. 12,000 m³ gas (at 9.8 kWh/m³).",
-    footerText: "🧪 Normal conditions: 0°C, 1013.25 mbar. Air pressure correction via altitude. Full load hours based on SBR guidelines and ISSO publications.",
-    sampleLabel: "🧪 Examples:",
-    pdfTitle: "⛽ " + APP_NAME + " + Full Load Hours Report",
-    pdfScale: "93% scale for 2 pages",
-    pdfSec1: "1️⃣ Gas flow & conversions",
-    pdfSec2: "2️⃣ Consumption analysis",
-    pdfSec3: "3️⃣ Combustion efficiency",
-    pdfSec4: "📅 Full load hours per building type (guidelines)",
-    pdfParam: "Parameter",
-    pdfValue: "Value",
-    pdfBoiler: "Boiler power Q",
-    pdfEtaDebit: "Efficiency η (flow)",
-    pdfSwn: "Calorific value Swn",
-    pdfVn: "💨 Normal flow Vₙ",
-    pdfVnRef: "Vₙ (conversion input)",
-    pdfTemp: "Meter temperature",
-    pdfPgas: "Gas overpressure",
-    pdfAlt: "Altitude / air pressure",
-    pdfVb: "🌡️ Operating flow V<sub>B</sub>",
-    pdfVbRef: "V<sub>B</sub> reference",
-    pdfVolTime: "Volume / time",
-    pdfResult: "📌 Result",
-    pdfFuel: "Fuel",
-    pdfMethod: "Method",
-    pdfMeasured: "Measured %",
-    pdfDt: "Δt (flue gas - intake)",
-    pdfEta: "🔥 η",
-    pdfDate: "Date",
-    pdfFooter: "📐 Annual energy consumption (kWh) = Boiler power (kW) × Full load hours. Standard conditions 0°C, 1013.25 mbar. Incl. propane/butane/LPG corrections. Made with AI support · info@magicwhale.eu"
+    // ======================= LANGUAGE HANDLING =======================
+    let currentLang = 'en';
+    const rtlLangs = ['ar'];
+
+    function applyLanguage(lang) {
+        currentLang = lang;
+        const t = I18N[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = rtlLangs.includes(lang) ? 'rtl' : 'ltr';
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key] !== undefined) {
+                el.innerHTML = t[key];
+            }
+        });
+
+        document.title = t.title.replace(/^[^\w]+/, '') + ' – ' + t.s5_title;
+
+        updateVn(); updateVb(); berekenTijd(); berekenEta(); updatePower(); updateCo2Section();
+    }
+
+    document.getElementById('langSelect').addEventListener('change', function() {
+        applyLanguage(this.value);
+    });
+
+    // ======================= CALCULATIONS =======================
+    const FUEL_CONST = {
+        aardgas:   { Kco2: 0.457, co2max: 11.7 },
+        vloeibaar: { Kco2: 0.514, co2max: 14.0 },
+        propaan:   { Kco2: 0.525, co2max: 13.8 },
+        butaan:    { Kco2: 0.535, co2max: 14.1 },
+        cokes:     { Kco2: 0.485, co2max: 10.0 }
+    };
+
+    function locale() {
+        return { en:'en-US', nl:'nl-NL', fr:'fr-FR', de:'de-DE', es:'es-ES', it:'it-IT',
+                 ru:'ru-RU', no:'nb-NO', sv:'sv-SE', zh:'zh-CN', ja:'ja-JP', ar:'ar-EG' }[currentLang] || 'en-US';
+    }
+
+    function updateVn() {
+        const Q = parseFloat(document.getElementById('qInput').value) || 0;
+        const eta = parseFloat(document.getElementById('etaInput1').value) || 0;
+        const Swn = parseFloat(document.getElementById('swnInput').value) || 0;
+        document.getElementById('vnResult').innerText = (Q && eta && Swn && eta > 0)
+            ? (Q / (Swn * (eta / 100))).toFixed(2) : '?';
+    }
+    document.getElementById('qInput').addEventListener('input', updateVn);
+    document.getElementById('etaInput1').addEventListener('input', updateVn);
+    document.getElementById('swnInput').addEventListener('input', updateVn);
+
+    function atmosfeerDruk(hoogte) { return 1013.25 * Math.exp(-hoogte / 8000); }
+    function updateVb() {
+        const Vn = parseFloat(document.getElementById('vn2Input').value) || 0;
+        const tC = parseFloat(document.getElementById('tempInput').value) || 0;
+        const pGas = parseFloat(document.getElementById('pgasInput').value) || 0;
+        const h = parseFloat(document.getElementById('altInput').value) || 0;
+        const pAbs = atmosfeerDruk(h) + pGas;
+        document.getElementById('vbResult').innerText = (Vn && pAbs > 0)
+            ? (Vn * (1013.25 / pAbs) * ((tC + 273.15) / 273.15)).toFixed(2) : '?';
+    }
+    ['vn2Input','tempInput','pgasInput','altInput'].forEach(id =>
+        document.getElementById(id).addEventListener('input', updateVb));
+
+    const vb3 = document.getElementById('vb3Input');
+    const volL = document.getElementById('volLiterInput');
+    const timeS = document.getElementById('timeSecInput');
+    const verbruikLabel = document.getElementById('verbruikLabel');
+    const verbruikResult = document.getElementById('verbruikResult');
+
+    function berekenTijd() {
+        const Vb = parseFloat(vb3.value) || 0;
+        const vol = parseFloat(volL.value) || 0;
+        if (Vb > 0 && vol > 0) {
+            const t = (vol * 3.6) / Vb;
+            timeS.value = t.toFixed(1);
+            verbruikLabel.innerText = 't =';
+            verbruikResult.innerText = t.toFixed(1) + ' s';
+        } else { verbruikResult.innerText = '?'; }
+    }
+    function berekenVolume() {
+        const Vb = parseFloat(vb3.value) || 0;
+        const t = parseFloat(timeS.value) || 0;
+        if (Vb > 0 && t > 0) {
+            const vol = (Vb * t) / 3.6;
+            volL.value = vol.toFixed(0);
+            verbruikLabel.innerText = I18N[currentLang].s3_vol.split('(')[0].trim().split(' ').pop() + ' =';
+            verbruikLabel.innerText = (currentLang === 'nl') ? 'Volume =' :
+                                      (currentLang === 'fr') ? 'Volume =' :
+                                      (currentLang === 'de') ? 'Volumen =' :
+                                      (currentLang === 'es') ? 'Volumen =' :
+                                      (currentLang === 'it') ? 'Volume =' :
+                                      (currentLang === 'ru') ? 'Объём =' :
+                                      (currentLang === 'no') ? 'Volum =' :
+                                      (currentLang === 'sv') ? 'Volym =' :
+                                      (currentLang === 'zh') ? '体积 =' :
+                                      (currentLang === 'ja') ? '体積 =' :
+                                      (currentLang === 'ar') ? 'الحجم =' : 'Volume =';
+            verbruikResult.innerText = vol.toFixed(0) + ' L';
+        } else { verbruikResult.innerText = '?'; }
+    }
+    document.getElementById('calcTimeBtn').addEventListener('click', e => { e.preventDefault(); berekenTijd(); });
+    document.getElementById('calcVolumeBtn').addEventListener('click', e => { e.preventDefault(); berekenVolume(); });
+    vb3.addEventListener('input', () => { if (verbruikLabel.innerText.includes('t =')) berekenTijd(); else berekenVolume(); });
+    volL.addEventListener('input', () => { if (verbruikLabel.innerText.includes('t =')) berekenTijd(); });
+    timeS.addEventListener('input', () => { if (!verbruikLabel.innerText.includes('t =')) berekenVolume(); });
+
+    const fuelSelect = document.getElementById('fuelSelect');
+    const co2Radio = document.getElementById('co2Radio');
+    const o2Radio = document.getElementById('o2Radio');
+    const percInput = document.getElementById('percInput');
+    const dtInput = document.getElementById('dtInput');
+    const etaResult = document.getElementById('etaResult');
+
+    function berekenEta() {
+        const fuel = fuelSelect.value;
+        const perc = parseFloat(percInput.value) || 0;
+        const dt = parseFloat(dtInput.value) || 0;
+        if (perc <= 0 || dt <= 0) { etaResult.innerText = '?'; return; }
+        let co2eq = perc;
+        if (!co2Radio.checked) {
+            const maxCo2 = FUEL_CONST[fuel].co2max;
+            co2eq = Math.max(0.1, maxCo2 * (20.9 - perc) / 20.9);
+        }
+        const K = FUEL_CONST[fuel].Kco2;
+        const verlies = Math.min(30, Math.max(0, dt * K / co2eq));
+        etaResult.innerText = (100 - verlies).toFixed(1);
+    }
+    [fuelSelect, co2Radio, o2Radio, percInput, dtInput].forEach(el =>
+        el.addEventListener('input', berekenEta));
+    fuelSelect.addEventListener('change', function() {
+        if (fuelSelect.value === 'cokes') {
+            o2Radio.checked = true;
+            co2Radio.disabled = true;
+            document.querySelector('label[for="co2Radio"]').style.opacity = 0.5;
+        } else {
+            co2Radio.disabled = false;
+            document.querySelector('label[for="co2Radio"]').style.opacity = 1;
+        }
+        berekenEta();
+    });
+
+    const gasVolumeInput = document.getElementById('gasVolumeInput');
+    const gasTypeSelect = document.getElementById('gasTypeSelect');
+    const efficiencyInput = document.getElementById('efficiencyInput');
+    const powerResult = document.getElementById('powerResult');
+
+    function updatePower() {
+        const volume = parseFloat(gasVolumeInput.value) || 0;
+        const eff = parseFloat(efficiencyInput.value) || 100;
+        const map = { aardgas_10p55:10.55, aardgas_10p63:10.63, aardgas_10p1:10.1,
+                      propaan_26:26.0, butaan_28:28.0, lpg_26p1:26.1, lpg_24perliter:15.3, cokes:5.0 };
+        const kwh = map[gasTypeSelect.value] || 10.55;
+        powerResult.innerText = (volume * kwh * (eff / 100)).toFixed(2) + ' kW';
+    }
+    [gasVolumeInput, gasTypeSelect, efficiencyInput].forEach(el =>
+        el.addEventListener('input', updatePower));
+
+    const flightTypeSelect = document.getElementById('flightTypeSelect');
+    const carEmissionInput = document.getElementById('carEmissionInput');
+    const treeUptakeInput = document.getElementById('treeUptakeInput');
+    const flightCo2Result = document.getElementById('flightCo2Result');
+    const carKmResult = document.getElementById('carKmResult');
+    const treeResult = document.getElementById('treeResult');
+    const multilingualCo2 = document.getElementById('multilingualCo2');
+
+    function fmtNum(n, decimals = 0) {
+        return n.toLocaleString(locale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
+    function updateCo2Section() {
+        const flightKg = flightTypeSelect.value === 'retour' ? 3920 : 1960;
+        const carG = parseFloat(carEmissionInput.value) || 157;
+        const treeKg = parseFloat(treeUptakeInput.value) || 25;
+        const carKm = (flightKg * 1000) / carG;
+        const trees = flightKg / treeKg;
+        const t = I18N[currentLang];
+
+        flightCo2Result.innerText = fmtNum(flightKg) + ' kg';
+        carKmResult.innerText = fmtNum(Math.round(carKm)) + ' km';
+        treeResult.innerText = fmtNum(trees, 1) + ' ' + t.treesUnit;
+
+        const langs = ['en','nl','fr','de','es','it','ru','no','sv','zh','ja','ar'];
+        multilingualCo2.innerHTML = langs.map(l => {
+            const T = I18N[l];
+            const loc = { en:'en-US', nl:'nl-NL', fr:'fr-FR', de:'de-DE', es:'es-ES', it:'it-IT',
+                          ru:'ru-RU', no:'nb-NO', sv:'sv-SE', zh:'zh-CN', ja:'ja-JP', ar:'ar-EG' }[l];
+            const dir = l === 'ar' ? 'rtl' : 'ltr';
+            const kG = flightKg.toLocaleString(loc);
+            const kK = Math.round(carKm).toLocaleString(loc);
+            const kT = trees.toLocaleString(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            return `<div dir="${dir}" style="background:white; border-radius:14px; padding:8px 12px; border:1px solid #cbdae6; font-size:0.82rem; line-height:1.5;">
+                <strong style="color:#003b5c;">${l.toUpperCase()}</strong><br>
+                ✈️ ${T.flight}: ${kG} kg CO₂e<br>
+                🚗 ${T.car}: ${kK} km<br>
+                🌳 ${T.trees}: ${kT} ${T.treesUnit}
+            </div>`;
+        }).join('');
+    }
+    [flightTypeSelect, carEmissionInput, treeUptakeInput].forEach(el =>
+        el.addEventListener('input', updateCo2Section));
+
+    // ======================= PDF REPORT =======================
+    document.getElementById('generatePDF').addEventListener('click', function() {
+        const t = I18N[currentLang];
+        const vn = document.getElementById('vnResult').innerText;
+        const vb = document.getElementById('vbResult').innerText;
+        const eta = etaResult.innerText;
+        const power = powerResult.innerText;
+        const flightCo2 = flightCo2Result.innerText;
+        const carKm = carKmResult.innerText;
+        const trees = treeResult.innerText;
+
+        const htmlContent = `
+        <html><head><meta charset="UTF-8"><title>${t.title} — PDF</title>
+        <style>
+            body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f9ff;padding:30px;}
+            .c{max-width:1000px;margin:0 auto;background:white;border-radius:30px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
+            h1{color:#002b4a;border-bottom:4px solid #0099cc;padding-bottom:12px;}
+            h2{color:#003b5c;margin-top:35px;background:#e8f0f9;padding:8px 20px;border-radius:60px;font-weight:400;}
+            table{width:100%;border-collapse:collapse;margin:15px 0;background:#f9fdff;border-radius:20px;overflow:hidden; table-layout: fixed;}
+            th{background:#002b4a;color:white;font-weight:500;padding:12px;text-align:left;}
+            td{padding:12px;border-bottom:1px solid #cbdae6; word-wrap: break-word;}
+            .v{font-weight:700;color:#002b4a;background:#e2eff9;border-radius:40px;padding:5px 15px;display:inline-block;}
+            .pi{background:#fff2c0;padding:15px;border-radius:30px;text-align:center;font-size:1.1rem;margin-bottom:25px;border:2px solid #f0b400;}
+        </style></head><body><div class="c">
+        <div class="pi">🖨️ Ctrl+P → Save as PDF</div>
+        <h1>${t.title}</h1>
+        <p>${new Date().toLocaleString(locale())}</p>
+
+        <h2>${t.s1_title}</h2>
+        <table><tr><th>${t.s1_q}</th><td>${document.getElementById('qInput').value} kW</td></tr>
+        <tr><th>${t.s1_eta}</th><td>${document.getElementById('etaInput1').value} %</td></tr>
+        <tr><th>${t.s1_swn}</th><td>${document.getElementById('swnInput').value} kWh/m³</td></tr>
+        <tr><th>Vₙ</th><td><span class="v">${vn} m³/h</span></td></tr></table>
+
+        <h2>${t.s2_title}</h2>
+        <table><tr><th>${t.s2_vn}</th><td>${document.getElementById('vn2Input').value} m³/h</td></tr>
+        <tr><th>${t.s2_temp}</th><td>${document.getElementById('tempInput').value} °C</td></tr>
+        <tr><th>${t.s2_pgas}</th><td>${document.getElementById('pgasInput').value} mbar</td></tr>
+        <tr><th>${t.s2_alt}</th><td>${document.getElementById('altInput').value} m</td></tr>
+        <tr><th>VB</th><td><span class="v">${vb} m³/h</span></td></tr></table>
+
+        <h2>${t.s3_title}</h2>
+        <table><tr><th>VB</th><td>${document.getElementById('vb3Input').value} m³/h</td></tr>
+        <tr><th>${t.s3_vol}</th><td>${document.getElementById('volLiterInput').value} L</td></tr>
+        <tr><th>${t.s3_time}</th><td>${document.getElementById('timeSecInput').value} s</td></tr>
+        <tr><th>${verbruikLabel.innerText}</th><td><span class="v">${verbruikResult.innerText}</span></td></tr></table>
+
+        <h2>${t.s4_title}</h2>
+        <table><tr><th>${t.s4_fuel}</th><td>${fuelSelect.options[fuelSelect.selectedIndex].text}</td></tr>
+        <tr><th>${t.s4_perc}</th><td>${percInput.value} %</td></tr>
+        <tr><th>${t.s4_dt}</th><td>${dtInput.value} K</td></tr>
+        <tr><th>η</th><td><span class="v">${eta} %</span></td></tr></table>
+
+        <h2>${t.s5_title}</h2>
+        <table><tr><th>${t.s5_vol}</th><td>${gasVolumeInput.value} m³/h</td></tr>
+        <tr><th>${t.s5_type}</th><td>${gasTypeSelect.options[gasTypeSelect.selectedIndex].text}</td></tr>
+        <tr><th>${t.s5_eff}</th><td>${efficiencyInput.value} %</td></tr>
+        <tr><th>${t.s5_power}</th><td><span class="v">${power}</span></td></tr></table>
+
+        <h2>${t.s6_title} (New York ⇄ Beijing)</h2>
+        <table><tr><th>${t.s6_co2e}</th><td>${flightCo2}</td></tr>
+        <tr><th>${t.s6_carkm}</th><td>${carKm}</td></tr>
+        <tr><th>${t.s6_trees}</th><td>${trees}</td></tr></table>
+
+        </div>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('SW:', reg.scope))
+        .catch(err => console.error('SW error:', err));
+    });
   }
-};
-['de','nl','fr','it','es','pt','ru','ar','sv','no','zh','ja'].forEach(lang => {
-  translations[lang] = Object.assign({}, translations.en);
-});
+</script>
+</body></html>`;
 
-// ====== STATE ======
-let currentLang = 'en';
-const FUEL_DATA = {
-  aardgas:   { Kco2: 0.457, co2max: 11.7 },
-  vloeibaar: { Kco2: 0.514, co2max: 14.0 },
-  propaan:   { Kco2: 0.525, co2max: 13.8 },
-  butaan:    { Kco2: 0.535, co2max: 14.1 },
-  cokes:     { Kco2: 0.485, co2max: 10.0 }
-};
-const $ = id => document.getElementById(id);
-function t(key) { return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key; }
+        const w = window.open('', '_blank', 'width=900,height=700');
+        if (!w) { alert('Allow pop-ups'); return; }
+        w.document.write(htmlContent);
+        w.document.close();
+        w.focus();
+    });
 
-// ====== LANGUAGE ======
-function applyLanguage(lang) {
-  currentLang = lang;
-  document.documentElement.lang = lang;
-  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-  document.title = t('title');
-  $('headerTitle').innerHTML = t('headerTitle') + ' <small id="headerSmall">' + t('headerSmall') + '</small>';
-  $('headerSub').innerHTML = t('headerSub');
-  $('pdfBtnText').innerText = t('pdfBtnText');
-  $('card1Title').innerHTML = t('card1Title');
-  $('card1Sub').innerHTML = t('card1Sub');
-  $('lblQ').innerHTML = t('lblQ');
-  $('lblEta1').innerHTML = t('lblEta1');
-  $('lblSwn').innerHTML = t('lblSwn');
-  $('result1Label').innerHTML = t('result1Label');
-  $('note1').innerHTML = t('note1');
-  $('card2Title').innerHTML = t('card2Title');
-  $('card2Sub').innerHTML = t('card2Sub');
-  $('lblVn2').innerHTML = t('lblVn2');
-  $('lblTemp').innerHTML = t('lblTemp');
-  $('lblPgas').innerHTML = t('lblPgas');
-  $('lblAlt').innerHTML = t('lblAlt');
-  $('result2Label').innerHTML = t('result2Label');
-  $('note2').innerHTML = t('note2');
-  $('card3Title').innerHTML = t('card3Title');
-  $('card3Sub').innerHTML = t('card3Sub');
-  $('lblVb3').innerHTML = t('lblVb3');
-  $('lblVolLiter').innerHTML = t('lblVolLiter');
-  $('lblTimeSec').innerHTML = t('lblTimeSec');
-  $('btnCalcTime').innerText = t('btnCalcTime');
-  $('btnCalcVolume').innerText = t('btnCalcVolume');
-  $('note3').innerHTML = t('note3');
-  $('card4Title').innerHTML = t('card4Title');
-  $('card4Sub').innerHTML = t('card4Sub');
-  $('lblFuel').innerHTML = t('lblFuel');
-  $('optAardgas').innerHTML = t('optAardgas');
-  $('optVloeibaar').innerHTML = t('optVloeibaar');
-  $('optPropaan').innerHTML = t('optPropaan');
-  $('optButaan').innerHTML = t('optButaan');
-  $('optCokes').innerHTML = t('optCokes');
-  $('lblCo2').innerHTML = t('lblCo2');
-  $('lblO2').innerHTML = t('lblO2');
-  $('lblPerc').innerHTML = t('lblPerc');
-  $('lblDt').innerHTML = t('lblDt');
-  $('result4Label').innerHTML = t('result4Label');
-  $('note4').innerHTML = t('note4');
-  $('card5Title').innerHTML = t('card5Title');
-  $('card5Sub').innerHTML = t('card5Sub');
-  $('thBuilding').innerHTML = t('thBuilding');
-  $('thHours').innerHTML = t('thHours');
-  $('thNote').innerHTML = t('thNote');
-  $('row1b').innerHTML = t('row1b');
-  $('row1n').innerHTML = t('row1n');
-  $('row2b').innerHTML = t('row2b');
-  $('row2n').innerHTML = t('row2n');
-  $('row3b').innerHTML = t('row3b');
-  $('row3n').innerHTML = t('row3n');
-  $('row4b').innerHTML = t('row4b');
-  $('row4n').innerHTML = t('row4n');
-  $('row5b').innerHTML = t('row5b');
-  $('row5n').innerHTML = t('row5n');
-  $('row6b').innerHTML = t('row6b');
-  $('row6n').innerHTML = t('row6n');
-  document.querySelectorAll('.unit-hours').forEach(el => el.innerText = t('unitHours'));
-  $('note5').innerHTML = t('note5');
-  $('footerText').innerHTML = t('footerText');
-  $('sampleLabel').innerText = t('sampleLabel');
-  refreshVerbruikLabel();
-}
+    // ======================= INITIALIZATION =======================
+    const browserLang = (navigator.language || 'en').slice(0,2).toLowerCase();
+    if (I18N[browserLang]) {
+        document.getElementById('langSelect').value = browserLang;
+        applyLanguage(browserLang);
+    } else {
+        applyLanguage('en');
+    }
 
-// ====== LOGICA ======
-const qInput = $('qInput'), etaInput1 = $('etaInput1'), swnInput = $('swnInput'), vnResult = $('vnResult');
-const vn2Input = $('vn2Input'), tempInput = $('tempInput'), pgasInput = $('pgasInput'), altInput = $('altInput'), vbResult = $('vbResult');
-const vb3Input = $('vb3Input'), volLiter = $('volLiterInput'), timeSec = $('timeSecInput');
-const verbruikLabel = $('verbruikLabel'), verbruikResultSpan = $('verbruikResult'), verbruikEenheid = $('verbruikEenheid');
-const fuelSelect = $('fuelSelect'), co2Radio = $('co2Radio'), o2Radio = $('o2Radio'), percInput = $('percInput'), dtInput = $('dtInput'), etaResultSpan = $('etaResult');
-
-function updateVn() {
-  let Q = parseFloat(qInput.value) || 0, eta = parseFloat(etaInput1.value) || 0, Swn = parseFloat(swnInput.value) || 0;
-  vnResult.innerText = (Q > 0 && eta > 0 && Swn > 0) ? (Q / (Swn * (eta / 100))).toFixed(2) : '?.??';
-}
-[qInput, etaInput1, swnInput].forEach(el => el.addEventListener('input', updateVn));
-
-function atmosfeerDruk(h) { return 1013.25 * Math.exp(-h / 8000); }
-function updateVb() {
-  let Vn = parseFloat(vn2Input.value) || 0, tC = parseFloat(tempInput.value) || 0;
-  let pGas = parseFloat(pgasInput.value) || 0, hoogte = parseFloat(altInput.value) || 0;
-  let pAbs = atmosfeerDruk(hoogte) + pGas;
-  let Tn = 273.15, Tb = tC + 273.15;
-  vbResult.innerText = (Vn > 0 && pAbs > 0) ? (Vn * (1013.25 / pAbs) * (Tb / Tn)).toFixed(2) : '?.?';
-}
-[vn2Input, tempInput, pgasInput, altInput].forEach(el => el.addEventListener('input', updateVb));
-
-let verbruikMode = 'time';
-function refreshVerbruikLabel() {
-  verbruikLabel.innerHTML = (verbruikMode === 'time') ? t('result3Time') : t('result3Volume');
-  verbruikEenheid.innerText = (verbruikMode === 'time') ? 's' : 'L';
-}
-function updateTimeFromVolume() {
-  let Vb = parseFloat(vb3Input.value) || 0, vol = parseFloat(volLiter.value) || 0;
-  if (Vb > 0 && vol > 0) {
-    let tt = (vol * 3.6) / Vb;
-    timeSec.value = tt.toFixed(1);
-    verbruikMode = 'time';
-    refreshVerbruikLabel();
-    verbruikResultSpan.innerText = tt.toFixed(1);
-  } else verbruikResultSpan.innerText = '?';
-}
-function updateVolumeFromTime() {
-  let Vb = parseFloat(vb3Input.value) || 0, tt = parseFloat(timeSec.value) || 0;
-  if (Vb > 0 && tt > 0) {
-    let vol = (Vb * tt) / 3.6;
-    volLiter.value = Math.round(vol);
-    verbruikMode = 'volume';
-    refreshVerbruikLabel();
-    verbruikResultSpan.innerText = Math.round(vol);
-  } else verbruikResultSpan.innerText = '?';
-}
-$('calcTimeBtn').addEventListener('click', e => { e.preventDefault(); updateTimeFromVolume(); });
-$('calcVolumeBtn').addEventListener('click', e => { e.preventDefault(); updateVolumeFromTime(); });
-vb3Input.addEventListener('input', () => { if (verbruikMode === 'time') updateTimeFromVolume(); else updateVolumeFromTime(); });
-volLiter.addEventListener('input', () => { if (verbruikMode === 'time') updateTimeFromVolume(); });
-timeSec.addEventListener('input', () => { if (verbruikMode === 'volume') updateVolumeFromTime(); });
-
-function computeEfficiency() {
-  let fuelKey = fuelSelect.value, isCo2 = co2Radio.checked;
-  let percVal = parseFloat(percInput.value) || 0, dt = parseFloat(dtInput.value) || 0;
-  if (percVal <= 0.01 || dt <= 0) { etaResultSpan.innerText = '?'; return; }
-  const fuel = FUEL_DATA[fuelKey];
-  let co2Eq = isCo2 ? percVal : fuel.co2max * (20.9 - percVal) / 20.9;
-  if (co2Eq < 0.2) co2Eq = 0.2;
-  let verlies = Math.min(40, Math.max(0, dt * fuel.Kco2 / co2Eq));
-  let eta = Math.min(100, Math.max(65, 100 - verlies));
-  etaResultSpan.innerText = eta.toFixed(1);
-}
-[fuelSelect, co2Radio, o2Radio, percInput, dtInput].forEach(el => el.addEventListener('change', computeEfficiency));
-percInput.addEventListener('input', computeEfficiency);
-dtInput.addEventListener('input', computeEfficiency);
-function handleCokesRestriction() {
-  if (fuelSelect.value === 'cokes') {
-    o2Radio.checked = true; co2Radio.disabled = true;
-    document.querySelector('label[for="co2Radio"]').style.opacity = '0.6';
-  } else {
-    co2Radio.disabled = false;
-    document.querySelector('label[for="co2Radio"]').style.opacity = '1';
-  }
-  computeEfficiency();
-}
-fuelSelect.addEventListener('change', handleCokesRestriction);
-
-// ====== RENEWABLE ADVISOR ======
-const BUILDING_FACTOR = {
-  woning:       { warmte: 55, uren: 1350 },
-  woningMatig:  { warmte: 80, uren: 1350 },
-  kantoor:      { warmte: 55, uren: 1200 },
-  school:       { warmte: 60, uren: 1000 },
-  zorg:         { warmte: 75, uren: 1600 },
-  industrie:    { warmte: 90, uren: 1500 }
-};
-const INSULATION_FACTOR = {
-  good:    0.75,
-  average: 1.00,
-  poor:    1.30
-};
-const SOLUTION_DATA = {
-  wp:       { label: "🌡️ Lucht/water warmtepomp", cop: 3.5, co2: "≈ 60–75% minder CO₂", basis: "Vrijwel altijd" },
-  wpGrond:  { label: "🌍 Bodemwarmtepomp",         cop: 4.5, co2: "≈ 70–85% minder CO₂", basis: "Bij nieuwbouw / grote tuin" },
-  pellet:   { label: "🪵 Pelletkachel / -ketel",   cop: 0.92, co2: "≈ 70–90% minder CO₂", basis: "Bij ruimte voor opslag" },
-  solar:    { label: "☀️ Zonneboiler (thermisch)", cop: 0.6, co2: "≈ 40–60% op tapwater",  basis: "Voor warm water" },
-  infrarood:{ label: "🔥 Infraroodpanelen",         cop: 1.0, co2: "Alleen bij groene stroom", basis: "Lokale verwarming" },
-  hr:       { label: "⚡ HR-ketel (condenserend)",  cop: 0.98, co2: "≈ 10–20% minder CO₂",  basis: "Als backup / hybride" },
-  wko:      { label: "💧 WKO / warmte-koude opslag", cop: 4.0, co2: "≈ 60–80% minder CO₂",  basis: "Utiliteit / groot vastgoed" }
-};
-
-const renewBuilding = $('renewBuilding');
-const renewArea = $('renewArea');
-const renewInsulation = $('renewInsulation');
-const renewCoverage = $('renewCoverage');
-const renewSolution = $('renewSolution');
-const renewPower = $('renewPower');
-const renewDemand = $('renewDemand');
-const renewAdvice = $('renewAdvice');
-const renewTableBody = $('renewTableBody');
-
-function formatNumber(n) {
-  return n.toLocaleString('nl-NL', { maximumFractionDigits: 0 });
-}
-
-function updateRenewable() {
-  const b = BUILDING_FACTOR[renewBuilding.value] || BUILDING_FACTOR.woning;
-  const area = parseFloat(renewArea.value) || 0;
-  const insFactor = INSULATION_FACTOR[renewInsulation.value] || 1;
-  const coverage = parseFloat(renewCoverage.value) || 1;
-
-  const warmtePerM2 = b.warmte * insFactor;
-  const totaalKw = (warmtePerM2 * area) / 1000 * coverage;
-  const demandKwh = b.uren * totaalKw;
-
-  renewPower.innerText = totaalKw.toFixed(1);
-  renewDemand.innerText = formatNumber(demandKwh);
-
-  // Advies
-  const advice = [];
-  const chosen = renewSolution.value;
-
-  let solutionKey = chosen;
-  if (chosen === 'auto') {
-    if (b.uren >= 1400 || area > 400) solutionKey = 'wpGrond';
-    else if (b.uren >= 1200) solutionKey = 'wp';
-    else solutionKey = 'wp';
-  }
-
-  const sol = SOLUTION_DATA[solutionKey];
-  if (sol) {
-    advice.push(`<strong>${sol.label}</strong> – COP/rendement ≈ ${sol.cop}. ${sol.basis}.`);
-    const nodig = (totaalKw / sol.cop).toFixed(1);
-    advice.push(`Benodigd (indicatief) opgesteld vermogen: <strong>${nodig} kW</strong> (bij vollast).`);
-  }
-
-  if (coverage < 1) {
-    advice.push(`Hybride oplossing: ${Math.round(coverage * 100)}% hernieuwbaar + ${Math.round((1 - coverage) * 100)}% gas (HR-ketel).`);
-  }
-  if (renewInsulation.value === 'poor') {
-    advice.push('⚠️ Overweeg eerst isolatie (dak, glas, spouw) – dit verlaagt het benodigde vermogen direct met 25–40%.');
-  }
-  if (area > 500) {
-    advice.push('💡 Bij grote gebouwen: laat een warmtepomp met buffervat en/of WKO-installatie doorrekenen.');
-  }
-
-  renewAdvice.innerHTML = advice.map(a => `<li>${a}</li>`).join('');
-
-  // Tabel met alle oplossingen
-  renewTableBody.innerHTML = Object.entries(SOLUTION_DATA).map(([key, s]) => {
-    const geschikt = coverage >= 0.6 && b.uren >= 900 ? 'Ja' : 'Beperkt';
-    return `<tr>
-      <td>${s.label}</td>
-      <td>${(totaalKw / s.cop).toFixed(1)} kW</td>
-      <td>${s.cop}</td>
-      <td>${s.co2}</td>
-      <td><span class="badge-ok">${geschikt}</span></td>
-    </tr>`;
-  }).join('');
-}
-
-[renewBuilding, renewArea, renewInsulation, renewCoverage, renewSolution].forEach(el => {
-  el.addEventListener('input', updateRenewable);
-  el.addEventListener('change', updateRenewable);
-});
-updateRenewable();
-
-// ====== PDF ======
-$('generatePDF').addEventListener('click', function() {
-  const Q = qInput.value, etaDebit = etaInput1.value, swn = swnInput.value;
-  const vnDisplay = vnResult.innerText, vnRef = vn2Input.value;
-  const tempC = tempInput.value, pGasMbar = pgasInput.value, altM = altInput.value;
-  const vbDisplay = vbResult.innerText, vbOper = vb3Input.value;
-  const literVal = volLiter.value, secVal = timeSec.value;
-  const verbruikFull = verbruikLabel.innerText + ' ' + verbruikResultSpan.innerText + ' ' + (verbruikEenheid.innerText || '');
-  const fuelSelText = fuelSelect.options[fuelSelect.selectedIndex].text;
-  const metingType = co2Radio.checked ? 'CO₂' : 'O₂';
-  const percValue = percInput.value, dtValue = dtInput.value, etaFinal = etaResultSpan.innerText;
-  const atmCalc = atmosfeerDruk(parseFloat(altM)).toFixed(1);
-  const locale = (currentLang === 'nl') ? 'nl-NL' : currentLang;
-
-  // Hernieuwbare waarden
-  const renewPowerVal = renewPower.innerText;
-  const renewDemandVal = renewDemand.innerText;
-
-  const w = window.open('', '_blank', 'width=1000,height=850,toolbar=yes,scrollbars=yes');
-  w.document.write(`
-    <!DOCTYPE html><html lang="${currentLang}" dir="${currentLang === 'ar' ? 'rtl' : 'ltr'}">
-    <head><meta charset="UTF-8"><title>${t('pdfTitle')}</title>
-    <style>
-      @media print { body { transform: scale(0.93); transform-origin: top left; width: 107.5%; margin: 0; padding: 0.2in; } .page-break { page-break-before: always; } .keep-together { page-break-inside: avoid; } }
-      body { font-family: 'Segoe UI', Arial, sans-serif; background: white; margin: 0; padding: 20px; font-size: 13px; }
-      .report { max-width: 1100px; margin: 0 auto; background: white; padding: 20px 30px; }
-      h1 { color: #002b4a; border-left: 8px solid #0099cc; padding-left: 20px; font-size: 1.7rem; }
-      h2 { background: #e2f0f7; padding: 6px 18px; border-radius: 60px; color: #004466; margin-top: 25px; font-size: 1.3rem; }
-      table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 18px; overflow: hidden; }
-      th { background: #003654; color: white; padding: 9px 12px; text-align: left; }
-      td { padding: 8px 12px; border-bottom: 1px solid #cbdbe2; }
-      .highlight { background: #e7f3fa; font-weight: bold; }
-      .value-badge { background: #002b4a; color: white; border-radius: 60px; padding: 3px 16px; display: inline-block; font-weight: bold; }
-      .range-badge-pdf { background: #e3f0f8; font-weight: bold; color: #0077aa; padding: 2px 12px; border-radius: 30px; display: inline-block; }
-      .footer-pdf { margin-top: 30px; text-align: center; font-size: 0.75rem; color: #2d627b; border-top: 1px solid #ccc; padding-top: 15px; }
-    </style></head><body><div class="report">
-      <h1>${t('pdfTitle')}</h1>
-      <p><strong>📅 ${new Date().toLocaleString(locale)}</strong> | ${t('pdfScale')}</p>
-      <div class="keep-together"><h2>${t('pdfSec1')}</h2>
-      <table><tr><th>${t('pdfParam')}</th><th>${t('pdfValue')}</th></tr>
-      <tr><td>${t('pdfBoiler')}</td><td>${Q} kW</td></tr>
-      <tr><td>${t('pdfEtaDebit')}</td><td>${etaDebit} %</td></tr>
-      <tr><td>${t('pdfSwn')}</td><td>${swn} kWh/m³</td></tr>
-      <tr class="highlight"><td>${t('pdfVn')}</td><td><span class="value-badge">${vnDisplay} m³/h</span></td></tr>
-      <tr><td>${t('pdfVnRef')}</td><td>${vnRef} m³/h</td></tr>
-      <tr><td>${t('pdfTemp')}</td><td>${tempC} °C</td></tr>
-      <tr><td>${t('pdfPgas')}</td><td>${pGasMbar} mbar</td></tr>
-      <tr><td>${t('pdfAlt')}</td><td>${altM} m / ${atmCalc} mbar</td></tr>
-      <tr class="highlight"><td>${t('pdfVb')}</td><td><span class="value-badge">${vbDisplay} m³/h</span></td></tr>
-      </table></div>
-      <div class="keep-together"><h2>${t('pdfSec2')}</h2>
-      <table><tr><th>${t('pdfParam')}</th><th>${t('pdfValue')}</th></tr>
-      <tr><td>${t('pdfVbRef')}</td><td>${vbOper} m³/h</td></tr>
-      <tr><td>${t('pdfVolTime')}</td><td>${literVal} L / ${secVal} s</td></tr>
-      <tr class="highlight"><td>${t('pdfResult')}</td><td><span class="value-badge">${verbruikFull}</span></td></tr>
-      </table></div>
-      <div class="keep-together"><h2>${t('pdfSec3')}</h2>
-      <table><tr><th>${t('pdfParam')}</th><th>${t('pdfValue')}</th></tr>
-      <tr><td>${t('pdfFuel')}</td><td><strong>${fuelSelText}</strong></td></tr>
-      <tr><td>${t('pdfMethod')}</td><td>${metingType}</td></tr>
-      <tr><td>${t('pdfMeasured')}</td><td>${percValue} %</td></tr>
-      <tr><td>${t('pdfDt')}</td><td>${dtValue} K</td></tr>
-      <tr class="highlight"><td>${t('pdfEta')}</td><td><span class="value-badge">${etaFinal} %</span></td></tr>
-      </table></div>
-      <div class="keep-together"><h2>6️⃣ Sustainable / renewable power advisor</h2>
-      <table><tr><th>${t('pdfParam')}</th><th>${t('pdfValue')}</th></tr>
-      <tr><td>Required power</td><td><span class="value-badge">${renewPowerVal} kW</span></td></tr>
-      <tr><td>Annual heat demand</td><td><span class="value-badge">${renewDemandVal} kWh/year</span></td></tr>
-      </table></div>
-      <div class="page-break"></div>
-      <h2>${t('pdfSec4')}</h2>
-      <table><tr><th>${t('thBuilding')}</th><th>${t('thHours')}</th><th>${t('thNote')}</th></tr>
-      <tr><td>${t('row1b')}</td><td><span class="range-badge-pdf">1300 – 1900</span></td><td>${t('row1n')}</td></tr>
-      <tr><td>${t('row2b')}</td><td><span class="range-badge-pdf">1500 – 2000</span></td><td>${t('row2n')}</td></tr>
-      <tr><td>${t('row3b')}</td><td><span class="range-badge-pdf">900 – 1600</span></td><td>${t('row3n')}</td></tr>
-      <tr><td>${t('row4b')}</td><td><span class="range-badge-pdf">800 – 1300</span></td><td>${t('row4n')}</td></tr>
-      <tr><td>${t('row5b')}</td><td><span class="range-badge-pdf">1200 – 1500</span></td><td>${t('row5n')}</td></tr>
-      <tr><td>${t('row6b')}</td><td><span class="range-badge-pdf">1000 – 2000</span></td><td>${t('row6n')}</td></tr>
-      </table>
-      <div class="footer-pdf">${t('pdfFooter')}</div>
-    </div></body></html>
-  `);
-  w.document.close(); w.focus(); w.print();
-});
-
-// ====== SAMPLES ======
-$('sampleVn').addEventListener('click', () => {
-  qInput.value = 115; etaInput1.value = 90; swnInput.value = 9.8;
-  qInput.dispatchEvent(new Event('input'));
-});
-$('samplePropaan').addEventListener('click', () => {
-  fuelSelect.value = 'propaan'; o2Radio.checked = true;
-  percInput.value = 3.0; dtInput.value = 160;
-  fuelSelect.dispatchEvent(new Event('change'));
-});
-$('sampleLPG').addEventListener('click', () => {
-  fuelSelect.value = 'vloeibaar'; co2Radio.checked = true;
-  percInput.value = 12.0; dtInput.value = 140;
-  fuelSelect.dispatchEvent(new Event('change'));
-});
-
-// ====== LANG ======
-$('langSelect').addEventListener('change', e => applyLanguage(e.target.value));
-
-// ====== INIT ======
-(function init() {
-  $('langSelect').value = 'en';
-  applyLanguage('en');
-  updateVn(); updateVb(); updateTimeFromVolume(); handleCokesRestriction();
-  updateRenewable();
+    document.querySelectorAll('.example-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const step = this.dataset.step;
+            if (step === '1') {
+                document.getElementById('qInput').value = 115;
+                document.getElementById('etaInput1').value = 90;
+                document.getElementById('swnInput').value = 9.8;
+                updateVn();
+            } else if (step === '2') {
+                document.getElementById('vn2Input').value = 14;
+                document.getElementById('tempInput').value = 10;
+                document.getElementById('pgasInput').value = 25;
+                document.getElementById('altInput').value = 0;
+                updateVb();
+            } else if (step === '3') {
+                document.getElementById('vb3Input').value = 15;
+                document.getElementById('volLiterInput').value = 300;
+                berekenTijd();
+            } else if (step === '4') {
+                document.getElementById('fuelSelect').value = 'propaan';
+                document.getElementById('co2Radio').checked = true;
+                document.getElementById('percInput').value = 13.2;
+                document.getElementById('dtInput').value = 140;
+                berekenEta();
+            } else if (step === '5') {
+                document.getElementById('gasTypeSelect').value = 'propaan_26';
+                document.getElementById('gasVolumeInput').value = 2.5;
+                updatePower();
+            } else if (step === '6') {
+                document.getElementById('flightTypeSelect').value = 'retour';
+                updateCo2Section();
+            }
+        });
+    });
 })();
 </script>
+
+<!-- Quick example buttons -->
+<div style="position:fixed; bottom:20px; right:20px; background:white; border-radius:60px; padding:8px 18px; box-shadow:0 5px 15px rgba(0,0,0,0.2); font-size:0.9rem; display:flex; gap:10px; z-index:999; flex-wrap:wrap; max-width:90vw;">
+    <span style="color:#005a8c;">🧪 examples:</span>
+    <button class="example-btn" data-step="1" style="background:none;border:none;color:#0077aa;text-decoration:underline;cursor:pointer;">1</button>
+    <button class="example-btn" data-step="2" style="background:none;border:none;color:#0077aa;text-decoration:underline;cursor:pointer;">2</button>
+    <button class="example-btn" data-step="3" style="background:none;border:none;color:#0077aa;text-decoration:underline;cursor:pointer;">3</button>
+    <button class="example-btn" data-step="4" style="background:none;border:none;color:#0077aa;text-decoration:underline;cursor:pointer;">4p</button>
+    <button class="example-btn" data-step="5" style="background:none;border:none;color:#0077aa;text-decoration:underline;cursor:pointer;">5</button>
+    <button class="example-btn" data-step="6" style="background:none;border:none;color:#0077aa;text-decoration:underline;cursor:pointer;">6 retour</button>
+</div>
 </body>
 </html>
