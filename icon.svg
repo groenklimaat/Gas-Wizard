@@ -1,0 +1,83 @@
+<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fuel Gas Wizard logo">
+  <defs>
+    <!-- Buitenste vlam: diep blauw → helder blauw (warmte) -->
+    <linearGradient id="flameBody" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#0a2a5e"/>
+      <stop offset="50%" stop-color="#1e6fd0"/>
+      <stop offset="100%" stop-color="#5ab8ff"/>
+    </linearGradient>
+    <!-- Binnenste vlam: warm geel (licht) -->
+    <linearGradient id="flameInner" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffd54a"/>
+      <stop offset="100%" stop-color="#fff6c2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.6" r="0.55">
+      <stop offset="0%" stop-color="#5ab8ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#5ab8ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Tekstgradient -->
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e6fd0"/>
+      <stop offset="100%" stop-color="#5ab8ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Zachte blauwe gloed achter de vlam -->
+  <circle cx="60" cy="55" r="42" fill="url(#glow)"/>
+
+  <!-- Buitenste vlam (blauw = warmte) -->
+  <path d="M60 6
+           C60 6, 36 36, 36 58
+           C36 73, 46 84, 60 84
+           C74 84, 84 73, 84 58
+           C84 36, 60 6, 60 6 Z"
+        fill="url(#flameBody)" stroke="#061a3a" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Binnenste vlam (geel = licht) -->
+  <path d="M60 34
+           C60 34, 49 50, 49 62
+           C49 70, 54 76, 60 76
+           C66 76, 71 70, 71 62
+           C71 50, 60 34, 60 34 Z"
+        fill="url(#flameInner)" opacity="0.95"/>
+
+  <!-- Nomogram-schaalverdeling -->
+  <g stroke="#dff0ff" stroke-width="1.8" stroke-linecap="round" opacity="0.9">
+    <line x1="42" y1="66" x2="42" y2="71"/>
+    <line x1="51" y1="66" x2="51" y2="69"/>
+    <line x1="60" y1="66" x2="60" y2="71"/>
+    <line x1="69" y1="66" x2="69" y2="69"/>
+    <line x1="78" y1="66" x2="78" y2="71"/>
+  </g>
+
+  <!-- Basis / meetbalk -->
+  <rect x="34" y="78" width="52" height="6" rx="3" fill="#061a3a"/>
+  <rect x="34" y="78" width="52" height="6" rx="3" fill="none" stroke="#5ab8ff" stroke-width="1.4"/>
+
+  <!-- Vonk / bubbels (blauw, passend bij warmte) -->
+  <circle cx="90" cy="20" r="2.8" fill="#5ab8ff" opacity="0.9"/>
+  <circle cx="98" cy="31" r="1.8" fill="#5ab8ff" opacity="0.7"/>
+  <circle cx="84" cy="13" r="1.4" fill="#5ab8ff" opacity="0.55"/>
+
+  <!-- Warme gele stip bovenaan de vlam (licht) -->
+  <circle cx="60" cy="17" r="2.8" fill="#fff6c2" opacity="0.9"/>
+
+  <!-- ===== TEKST: Fuel Gas Wizard ===== -->
+  <text x="60" y="112"
+        text-anchor="middle"
+        font-family="'Segoe UI', Roboto, system-ui, sans-serif"
+        font-size="15"
+        font-weight="700"
+        letter-spacing="0.5"
+        fill="url(#textGrad)">Fuel Gas</text>
+  <text x="60" y="132"
+        text-anchor="middle"
+        font-family="'Segoe UI', Roboto, system-ui, sans-serif"
+        font-size="18"
+        font-weight="800"
+        letter-spacing="1.2"
+        fill="#0a2a5e">WIZARD</text>
+
+  <!-- Subtiele accentlijn onder de tekst -->
+  <line x1="38" y1="140" x2="82" y2="140" stroke="#5ab8ff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+</svg>
