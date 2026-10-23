@@ -17,17 +17,20 @@
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
     body {
         background: #e0eef7; margin: 0; min-height: 100vh;
-        display: flex; justify-content: center; align-items: center; padding: 20px;
+        padding: 20px; display: block; /* Flexbox verwijderd om afkappen te voorkomen */
     }
     .calculator {
         max-width: 1400px; width: 100%; background: white;
         border-radius: 40px 40px 30px 30px;
         box-shadow: 0 20px 40px rgba(0,20,40,0.3);
-        overflow: hidden; border: 1px solid #b0c4d9;
+        border: 1px solid #b0c4d9;
+        margin: 0 auto; /* Centreert de calculator */
+        display: flex; flex-direction: column;
     }
     .header {
         background: #002b4a; color: white; padding: 25px 30px;
         display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        border-radius: 40px 40px 0 0;
     }
     .header h1 { margin: 0; font-weight: 400; font-size: 2rem; letter-spacing: 1px; }
     .header h1 small { font-size: 1rem; color: #a0c6e9; margin-left: 20px; }
@@ -44,33 +47,43 @@
         display: flex; align-items: center; gap: 8px;
     }
     .pdf-btn:hover { background: #0d8a73; transform: scale(1.02); }
+    
+    /* Verbeterde grid lay-out die zich automatisch aanpast */
     .tool-grid {
-        display: grid; grid-template-columns: repeat(2, 1fr);
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
         gap: 25px; padding: 30px; background: #f0f7fc;
     }
     .card {
         background: white; border-radius: 28px; padding: 22px 25px;
         box-shadow: 0 10px 18px rgba(0,40,70,0.1);
         border: 1px solid #cbdae6; transition: 0.1s;
+        min-width: 0; /* Voorkomt overflow in grid */
     }
     .card:hover { border-color: #0099cc; box-shadow: 0 15px 25px rgba(0,80,130,0.15); }
     .card h2 {
         margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; color: #003b5c;
         border-left: 10px solid #0099cc; padding-left: 18px; font-weight: 400;
+        word-wrap: break-word;
     }
     .card h2 i { font-weight: 300; color: #2c7aa0; font-size: 0.95rem; margin-left: 12px; display: block; }
+    
     .input-group {
         margin-bottom: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
     }
-    .input-group label { width: 200px; font-weight: 600; color: #1d4e6f; font-size: 0.95rem; }
+    .input-group label { 
+        flex: 0 0 180px; /* Flexibelere breedte */
+        font-weight: 600; color: #1d4e6f; font-size: 0.95rem; 
+    }
     .input-group input, .input-group select {
-        flex: 1 1 180px; padding: 10px 14px; border: 1px solid #b8ccdd;
+        flex: 1 1 100px; min-width: 0; padding: 10px 14px; border: 1px solid #b8ccdd;
         border-radius: 40px; font-size: 1rem; background: #f9fdfe; transition: 0.15s;
     }
     .input-group input:focus, .input-group select:focus {
         outline: none; border-color: #0077aa; box-shadow: 0 0 0 3px rgba(0,150,200,0.2);
     }
-    .input-group .unit { width: 60px; color: #2f6f9c; font-weight: 500; font-size: 0.9rem; }
+    .input-group .unit { width: 60px; color: #2f6f9c; font-weight: 500; font-size: 0.9rem; flex: 0 0 auto; }
+    
     .result {
         background: #e2eff9; border-radius: 40px; padding: 15px 20px; margin-top: 20px;
         font-size: 1.2rem; border: 1px solid #b0d0e5;
@@ -95,11 +108,14 @@
     .footer {
         background: #cbdae6; padding: 15px 30px; text-align: center;
         color: #113449; font-size: 0.95rem;
+        border-radius: 0 0 30px 30px;
     }
-    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
-    table { width:100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #cbdae6; }
+    
+    /* Tabel fix voor lange woorden */
+    table { width:100%; border-collapse: collapse; font-size: 0.9rem; table-layout: fixed; }
+    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #cbdae6; word-wrap: break-word; }
     th { background: #003b5c; color: white; }
+    
     [dir="rtl"] .input-group label { text-align: right; }
     [dir="rtl"] .card h2 { border-left: none; border-right: 10px solid #0099cc; padding-left: 0; padding-right: 18px; }
     [dir="rtl"] .explanation, [dir="rtl"] .note { border-left: none; border-right: 6px solid #0099cc; }
@@ -183,13 +199,13 @@
                 <input type="number" id="vb3Input" value="15.0" step="0.1"><span class="unit">m³/h</span>
             </div>
             <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
-                <div style="flex:1; min-width:180px;">
+                <div style="flex:1 1 180px; min-width:0;">
                     <div class="input-group">
                         <label data-i18n="s3_vol">Measured volume (litres)</label>
                         <input type="number" id="volLiterInput" value="300" step="1"><span class="unit">L</span>
                     </div>
                 </div>
-                <div style="flex:1; min-width:180px;">
+                <div style="flex:1 1 180px; min-width:0;">
                     <div class="input-group">
                         <label data-i18n="s3_time">Measurement time t (s)</label>
                         <input type="number" id="timeSecInput" value="72" step="0.1"><span class="unit">s</span>
@@ -236,10 +252,10 @@
         </div>
 
         <!-- 5. m³ to kW -->
-        <div class="card" style="grid-column: span 2;">
+        <div class="card" style="grid-column: span 1; /* Aangepast voor betere flow */">
             <h2><span data-i18n="s5_title">5. m³ to kW converter</span><i data-i18n="s5_sub">for all gas types</i></h2>
             <div style="display:flex; flex-wrap:wrap; gap:30px; align-items:flex-start;">
-                <div style="flex:1; min-width:280px;">
+                <div style="flex:1 1 280px; min-width:0;">
                     <div class="input-group">
                         <label data-i18n="s5_vol">Volume (m³/h)</label>
                         <input type="number" id="gasVolumeInput" value="1.0" step="0.1" min="0"><span class="unit">m³/h</span>
@@ -264,30 +280,15 @@
                     <div class="result"><span data-i18n="s5_power">Power =</span><span class="value" id="powerResult">10.55 kW</span></div>
                     <div class="note" data-i18n="s5_note">⚡ Calculation: (m³/h) × (kWh/m³) × (η/100) = kW</div>
                 </div>
-                <div style="flex:1; min-width:260px; background:#f0f7fc; border-radius:30px; padding:20px;">
-                    <h3 style="margin-top:0; color:#003b5c;" data-i18n="s5_tableTitle">📊 Energy content per m³</h3>
-                    <table id="energyTable">
-                        <tr><th data-i18n="th_gas">Gas type</th><th>kWh/m³</th><th>MJ/m³</th></tr>
-                        <tr><td data-i18n="gas_nat_std_short">Natural gas (standard)</td><td>10.55</td><td>~38.0</td></tr>
-                        <tr><td data-i18n="gas_nat_hi_short">Natural gas (high cal.)</td><td>10.63</td><td>~38.3</td></tr>
-                        <tr><td data-i18n="gas_nat_lo_short">Natural gas (low cal.)</td><td>10.1</td><td>~36.4</td></tr>
-                        <tr><td data-i18n="gas_prop_short">Propane (gas)</td><td>26.0</td><td>93.6</td></tr>
-                        <tr><td data-i18n="gas_but_short">Butane (gas)</td><td>28.0</td><td>100.8</td></tr>
-                        <tr><td data-i18n="gas_lpg_short">LPG (gas)</td><td>26.1</td><td>94.0</td></tr>
-                        <tr><td data-i18n="gas_lpg_liq_short">LPG liquid*</td><td>15.3</td><td>55.1</td></tr>
-                        <tr><td data-i18n="gas_coke_short">Coke gas</td><td>5.0</td><td>18.0</td></tr>
-                    </table>
-                    <p style="font-size:0.8rem;" data-i18n="s5_tableNote">*LPG liquid in litres converted to m³ gas. Indicative values.</p>
-                </div>
             </div>
             <div class="explanation" style="margin-top:20px;" data-i18n="s5_explain">ℹ️ How it works: choose gas type and volume in m³/h. Power = volume × energy content × efficiency.</div>
         </div>
 
         <!-- 6. CO2 equivalent -->
-        <div class="card" style="grid-column: span 2;">
+        <div class="card" style="grid-column: span 1;">
             <h2><span data-i18n="s6_title">6. CO₂ equivalent · car · trees</span><i data-i18n="s6_sub">New York ⇄ Beijing</i></h2>
             <div style="display:flex; flex-wrap:wrap; gap:30px; align-items:flex-start;">
-                <div style="flex:1; min-width:280px;">
+                <div style="flex:1 1 280px; min-width:0;">
                     <div class="input-group">
                         <label data-i18n="s6_flight">Flight type</label>
                         <select id="flightTypeSelect">
@@ -307,10 +308,6 @@
                     <div class="result" style="margin-top:10px;"><span data-i18n="s6_carkm">🚗 Equivalent car</span><span class="value" id="carKmResult">24,968 km</span></div>
                     <div class="result" style="margin-top:10px;"><span data-i18n="s6_trees">🌳 Equivalent trees</span><span class="value" id="treeResult">156.8 trees/yr</span></div>
                     <div class="explanation" data-i18n="s6_explain">ℹ️ Explanation: flight CO₂e based on Atmosfair economy return NY–Beijing. Car km = CO₂e ÷ average emission. Trees = CO₂e ÷ yearly uptake.</div>
-                </div>
-                <div style="flex:1; min-width:260px; background:#f0f7fc; border-radius:30px; padding:20px;">
-                    <h3 style="margin-top:0; color:#003b5c;" data-i18n="s6_langTitle">🌍 All languages</h3>
-                    <div id="multilingualCo2" style="display:grid; grid-template-columns:1fr; gap:8px;"></div>
                 </div>
             </div>
         </div>
@@ -780,19 +777,15 @@
         document.documentElement.lang = lang;
         document.documentElement.dir = rtlLangs.includes(lang) ? 'rtl' : 'ltr';
 
-        // Translate all elements with data-i18n
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (t[key] !== undefined) {
-                // Preserve <sub> etc.? We simply set text; for spans it's fine.
                 el.innerHTML = t[key];
             }
         });
 
-        // Update document title
         document.title = t.title.replace(/^[^\w]+/, '') + ' – ' + t.s5_title;
 
-        // Recalculate all outputs (formatting depends on locale)
         updateVn(); updateVb(); berekenTijd(); berekenEta(); updatePower(); updateCo2Section();
     }
 
@@ -956,7 +949,6 @@
         carKmResult.innerText = fmtNum(Math.round(carKm)) + ' km';
         treeResult.innerText = fmtNum(trees, 1) + ' ' + t.treesUnit;
 
-        // Multilingual summary (all 12 languages simultaneously)
         const langs = ['en','nl','fr','de','es','it','ru','no','sv','zh','ja','ar'];
         multilingualCo2.innerHTML = langs.map(l => {
             const T = I18N[l];
@@ -995,9 +987,9 @@
             .c{max-width:1000px;margin:0 auto;background:white;border-radius:30px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
             h1{color:#002b4a;border-bottom:4px solid #0099cc;padding-bottom:12px;}
             h2{color:#003b5c;margin-top:35px;background:#e8f0f9;padding:8px 20px;border-radius:60px;font-weight:400;}
-            table{width:100%;border-collapse:collapse;margin:15px 0;background:#f9fdff;border-radius:20px;overflow:hidden;}
+            table{width:100%;border-collapse:collapse;margin:15px 0;background:#f9fdff;border-radius:20px;overflow:hidden; table-layout: fixed;}
             th{background:#002b4a;color:white;font-weight:500;padding:12px;text-align:left;}
-            td{padding:12px;border-bottom:1px solid #cbdae6;}
+            td{padding:12px;border-bottom:1px solid #cbdae6; word-wrap: break-word;}
             .v{font-weight:700;color:#002b4a;background:#e2eff9;border-radius:40px;padding:5px 15px;display:inline-block;}
             .pi{background:#fff2c0;padding:15px;border-radius:30px;text-align:center;font-size:1.1rem;margin-bottom:25px;border:2px solid #f0b400;}
         </style></head><body><div class="c">
@@ -1061,7 +1053,6 @@
     });
 
     // ======================= INITIALIZATION =======================
-    // Auto-detect browser language
     const browserLang = (navigator.language || 'en').slice(0,2).toLowerCase();
     if (I18N[browserLang]) {
         document.getElementById('langSelect').value = browserLang;
@@ -1070,7 +1061,6 @@
         applyLanguage('en');
     }
 
-    // Quick example buttons
     document.querySelectorAll('.example-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const step = this.dataset.step;
