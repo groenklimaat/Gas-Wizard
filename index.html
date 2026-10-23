@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MijnApp">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gasverbrandingsinstallatie + m³ naar kW tool</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #e0eef7;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .calculator {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 40px 40px 30px 30px;
+            box-shadow: 0 20px 40px rgba(0,20,40,0.3);
+            overflow: hidden;
+            border: 1px solid #b0c4d9;
+        }
+        .header {
+            background: #002b4a;
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            margin: 0;
+            font-weight: 400;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+        .header h1 small {
+            font-size: 1rem;
+            color: #a0c6e9;
+            margin-left: 20px;
+        }
+        .pdf-btn {
+            background: #1e6f5c;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pdf-btn:hover {
+            background: #0d8a73;
+            transform: scale(1.02);
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            padding: 30px;
+            background: #f0f7fc;
+        }
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 22px 25px;
+            box-shadow: 0 10px 18px rgba(0,40,70,0.1);
+            border: 1px solid #cbdae6;
+            transition: 0.1s;
+        }
+        .card:hover {
+            border-color: #0099cc;
+            box-shadow: 0 15px 25px rgba(0,80,130,0.15);
+        }
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #003b5c;
+            border-left: 10px solid #0099cc;
+            padding-left: 18px;
+            font-weight: 400;
+        }
+        .card h2 i {
+            font-weight: 300;
+            color: #2c7aa0;
+            font-size: 1rem;
+            margin-left: 12px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group label {
+            width: 180px;
+            font-weight: 600;
+            color: #1d4e6f;
+            font-size: 0.95rem;
+        }
+        .input-group input, .input-group select {
+            flex: 1 1 200px;
+            padding: 10px 14px;
+            border: 1px solid #b8ccdd;
+            border-radius: 40px;
+            font-size: 1rem;
+            background: #f9fdfe;
+            transition: 0.15s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #0077aa;
+            box-shadow: 0 0 0 3px rgba(0,150,200,0.2);
+        }
+        .input-group .unit {
+            width: 50px;
+            color: #2f6f9c;
+            font-weight: 500;
+        }
+        .result {
+            background: #e2eff9;
+            border-radius: 40px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            font-size: 1.3rem;
+            border: 1px solid #b0d0e5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .result span:first-child {
+            font-weight: 600;
+            color: #003459;
+        }
+        .result .value {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #002b4a;
+            background: white;
+            padding: 5px 25px;
+            border-radius: 50px;
+            letter-spacing: 1px;
+            border: 1px solid #7fa9c7;
+        }
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .radio-group div {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .note {
+            background: #fef6e6;
+            border-left: 6px solid #f0b400;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin: 20px 0 0;
+            font-size: 0.9rem;
+            color: #3d3d3d;
+        }
+        .explanation {
+            background: #e6f3ff;
+            border-left: 6px solid #0099cc;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin: 15px 0 0;
+            font-size: 0.9rem;
+            color: #004466;
+        }
+        .footer {
+            background: #cbdae6;
+            padding: 15px 30px;
+            text-align: center;
+            color: #113449;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 900px) {
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+        .fuel-highlight {
+            font-weight: 600;
+            color: #003f5e;
+        }
+    </style>
+</head>
+<body>
+<div class="calculator" id="calcContainer">
+    <div class="header">
+        <div>
+            <h1>⛽ Gasverbrandingsinstallatie <small>incl. m³ → kW tool</small></h1>
+            <p>📍 Nomogram + rekenbladen – alle gassoorten</p>
+        </div>
+        <button class="pdf-btn" id="generatePDF">📄 PDF-rapport genereren</button>
+    </div>
+
+    <div class="tool-grid">
+        <!-- 1. Gasdebit (Vn) -->
+        <div class="card">
+            <h2>1. Gasdebit Vₙ <i>m³/h (normaal)</i></h2>
+            <div class="input-group">
+                <label title="Het nominale ketelvermogen in kW">Ketelvermogen Q (kW)</label>
+                <input type="number" id="qInput" value="115" step="0.1">
+                <span class="unit">kW</span>
+            </div>
+            <div class="input-group">
+                <label title="Het werkingsrendement van de ketel (0-100%)">Werkingsrendement η (%)</label>
+                <input type="number" id="etaInput1" value="90" step="0.1" min="0" max="100">
+                <span class="unit">%</span>
+            </div>
+            <div class="input-group">
+                <label title="De stookwaarde (onderste verbrandingswaarde) van het gas in kWh per normaal kubieke meter">Stookwaarde S<sub>wn</sub> (kWh/m³)</label>
+                <input type="number" id="swnInput" value="9.8" step="0.01">
+                <span class="unit">kWh/m³</span>
+            </div>
+            <div class="result">
+                <span>Vₙ =</span>
+                <span class="value" id="vnResult">13.04</span>
+            </div>
+            <div class="explanation">
+                <strong>ℹ️ Uitleg:</strong> Vₙ = Q / (S<sub>wn</sub> × η/100).<br>Q = ketelvermogen (kW), η = rendement (%), S<sub>wn</sub> = stookwaarde (kWh/m³).
+            </div>
+        </div>
+
+        <!-- 2. Volume omrekening (Vn → Vb) -->
+        <div class="card">
+            <h2>2. Volume‑omrekening Vₙ → V<sub>B</sub> <i>bedrijfstoestand</i></h2>
+            <div class="input-group">
+                <label title="Het normaal gasdebiet (uit stap 1)">Gasdebit Vₙ (m³/h)</label>
+                <input type="number" id="vn2Input" value="14.0" step="0.1">
+                <span class="unit">m³/h</span>
+            </div>
+            <div class="input-group">
+                <label title="Temperatuur van het gas aan de meter">Gastemperatuur aan teller</label>
+                <input type="number" id="tempInput" value="10" step="0.1">
+                <span class="unit">°C</span>
+            </div>
+            <div class="input-group">
+                <label title="Overdruk van het gas (boven atmosferische druk)">Gasdruk (overdruk) P<sub>gas</sub></label>
+                <input type="number" id="pgasInput" value="25" step="0.1">
+                <span class="unit">mbar</span>
+            </div>
+            <div class="input-group">
+                <label title="Hoogte van de installatie boven zeeniveau (voor atmosferische druk)">Hoogte boven zeespiegel</label>
+                <input type="number" id="altInput" value="0" step="1">
+                <span class="unit">m</span>
+            </div>
+            <div class="result">
+                <span>V<sub>B</sub> =</span>
+                <span class="value" id="vbResult">15.28</span>
+            </div>
+            <div class="explanation">
+                <strong>ℹ️ Uitleg:</strong> V<sub>B</sub> = Vₙ × (1013,25 / P<sub>abs</sub>) × ((T<sub>gas</sub>+273,15) / 273,15).<br>P<sub>abs</sub> = atmosferische druk + gasoverdruk.
+            </div>
+        </div>
+
+        <!-- 3. Gasverbruik per uur (tijd / volume) -->
+        <div class="card">
+            <h2>3. Gasverbruik per uur <i>V<sub>B</sub> – tijd – volume</i></h2>
+            <div class="input-group">
+                <label title="Het bedrijfsdebiet (uit stap 2)">Gasdebit V<sub>B</sub> (m³/h)</label>
+                <input type="number" id="vb3Input" value="15.0" step="0.1">
+                <span class="unit">m³/h</span>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                <div style="flex:1; min-width:180px;">
+                    <div class="input-group">
+                        <label title="Afgelezen volume aan de gasmeter (in liters)">Gemeten volume (liter)</label>
+                        <input type="number" id="volLiterInput" value="300" step="1">
+                        <span class="unit">L</span>
+                    </div>
+                </div>
+                <div style="flex:1; min-width:180px;">
+                    <div class="input-group">
+                        <label title="Gemeten tijd in seconden">Meettijd t (s)</label>
+                        <input type="number" id="timeSecInput" value="72" step="0.1">
+                        <span class="unit">s</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
+                <button id="calcTimeBtn" style="flex:1; background:#0077aa; color:white; border:none; border-radius:40px; padding:12px; font-weight:bold; cursor:pointer;">Bereken tijd ⏱️</button>
+                <button id="calcVolumeBtn" style="flex:1; background:#2a7f62; color:white; border:none; border-radius:40px; padding:12px; font-weight:bold; cursor:pointer;">Bereken volume 📊</button>
+            </div>
+            <div class="result" style="margin-top: 20px;">
+                <span id="verbruikLabel">t =</span>
+                <span class="value" id="verbruikResult">72.0</span>
+            </div>
+            <div class="explanation">
+                <strong>ℹ️ Uitleg:</strong> t (s) = (volume in L × 3,6) / V<sub>B</sub> (m³/h) of volume (L) = (V<sub>B</sub> × t) / 3,6.
+            </div>
+        </div>
+
+        <!-- 4. Verbrandingsrendement η (CO₂ / O₂ + Δt) -->
+        <div class="card">
+            <h2>4. Verbrandingsrendement η <i>CO₂ / O₂ + Δt</i></h2>
+            <div class="input-group">
+                <label title="Kies het type brandstof">Brandstoftype</label>
+                <select id="fuelSelect">
+                    <option value="aardgas" selected>Aardgas / stadsgas</option>
+                    <option value="vloeibaar">Vloeibaar gas (LPG - mengsel)</option>
+                    <option value="propaan">Propaan (C3H8)</option>
+                    <option value="butaan">Butaan (C4H10)</option>
+                    <option value="cokes">Cokegas</option>
+                </select>
+            </div>
+            <div class="radio-group">
+                <div><input type="radio" name="gasType" id="co2Radio" value="co2" checked> <label for="co2Radio" title="Meet het CO₂-gehalte in de rookgassen">CO₂ %</label></div>
+                <div><input type="radio" name="gasType" id="o2Radio" value="o2"> <label for="o2Radio" title="Meet het O₂-gehalte in de rookgassen">O₂ %</label></div>
+            </div>
+            <div class="input-group">
+                <label title="Gemeten percentage CO₂ of O₂ in droge rookgassen">Percentage in rookgas</label>
+                <input type="number" id="percInput" value="12.0" step="0.1" min="0" max="21">
+                <span class="unit">%</span>
+            </div>
+            <div class="input-group">
+                <label title="Verschil tussen rookgastemperatuur en aanzuigluchttemperatuur">Δt (rookgas − aanzuig)</label>
+                <input type="number" id="dtInput" value="140" step="1">
+                <span class="unit">K</span>
+            </div>
+            <div class="result">
+                <span>η =</span>
+                <span class="value" id="etaResult">94.0</span>
+            </div>
+            <div class="explanation">
+                <strong>ℹ️ Uitleg:</strong> Bij CO₂: verlies = (K × Δt) / CO₂. Bij O₂: CO₂<sub>eq</sub> = maxCO₂ × (20,9 − O₂)/20,9. K en maxCO₂ brandspecifiek.
+            </div>
+        </div>
+
+        <!-- NIEUW: 5. m³ naar kW conversie voor alle gassoorten -->
+        <div class="card" style="grid-column: span 2;">
+            <h2>5. m³ naar kW converter <i>voor alle gassoorten</i></h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start;">
+                <div style="flex: 1; min-width: 280px;">
+                    <div class="input-group">
+                        <label title="Hoeveelheid gas in kubieke meters per uur">Volume (m³/h)</label>
+                        <input type="number" id="gasVolumeInput" value="1.0" step="0.1" min="0">
+                        <span class="unit">m³/h</span>
+                    </div>
+                    <div class="input-group">
+                        <label title="Kies het type gas">Gassoort</label>
+                        <select id="gasTypeSelect" style="flex: 1 1 200px;">
+                            <option value="aardgas_10p55" selected>Aardgas (10,55 kWh/m³) [1]</option>
+                            <option value="aardgas_10p63">Aardgas (10,63 kWh/m³) [2]</option>
+                            <option value="aardgas_10p1">Aardgas (10,1 kWh/m³ - laagcalorisch)</option>
+                            <option value="propaan_26">Propaan (26 kWh/m³) [5]</option>
+                            <option value="butaan_28">Butaan (28 kWh/m³) [5]</option>
+                            <option value="lpg_26p1">LPG (26,1 kWh/m³) [5]</option>
+                            <option value="lpg_24perliter">LPG vloeibaar (24 MJ/l → 15,3 kWh/m³)* [8]</option>
+                            <option value="cokes">Cokegas (5,0 kWh/m³)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label title="Optioneel: werkingsrendement (0-100%)">Rendement η (%)</label>
+                        <input type="number" id="efficiencyInput" value="100" step="0.1" min="0" max="100">
+                        <span class="unit">%</span>
+                    </div>
+                    <div class="result">
+                        <span>Vermogen =</span>
+                        <span class="value" id="powerResult">10.6</span>
+                    </div>
+                    <div class="note" style="margin-top: 10px;">
+                        ⚡ Berekening: (m³/h) × (kWh/m³) × (η/100) = kW
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 260px; background: #f0f7fc; border-radius: 30px; padding: 20px;">
+                    <h3 style="margin-top: 0; color: #003b5c;">📊 Energie-inhoud per m³</h3>
+                    <table style="width:100%; border-collapse: collapse;">
+                        <tr><th>Gassoort</th><th>kWh/m³</th><th>MJ/m³</th></tr>
+                        <tr><td>Aardgas (standaard)</td><td>10,55</td><td>~38,0</td></tr>
+                        <tr><td>Aardgas (hoogcalorisch)</td><td>10,63</td><td>~38,3</td></tr>
+                        <tr><td>Aardgas (laagcalorisch)</td><td>10,1</td><td>~36,4</td></tr>
+                        <tr><td>Propaan (gas)</td><td>26,0</td><td>93,6</td></tr>
+                        <tr><td>Butaan (gas)</td><td>28,0</td><td>100,8</td></tr>
+                        <tr><td>LPG (gas)</td><td>26,1</td><td>94,0</td></tr>
+                        <tr><td>LPG vloeibaar*</td><td>15,3</td><td>55,1</td></tr>
+                        <tr><td>Cokegas</td><td>5,0</td><td>18,0</td></tr>
+                    </table>
+                    <p style="font-size:0.85rem; margin-top:10px;">*LPG vloeibaar in liters, omgerekend naar m³ gas (1 liter vloeibaar ≈ 0,27 m³ gasvormig). Waarden indicatief.</p>
+                    <p style="font-size:0.85rem;">Bron: [1][2][5][8]</p>
+                </div>
+            </div>
+            <div class="explanation" style="margin-top: 20px;">
+                <strong>ℹ️ Hoe werkt het?</strong> Kies je gassoort en het volume in m³/h. Het vermogen (kW) wordt berekend als volume × energie-inhoud (kWh/m³) × rendement. De waarden zijn afkomstig van erkende bronnen: aardgas 10,55-10,63 kWh/m³ [1][2]; propaan/butaan/LPG ~26-28 kWh/m³ [5]; LPG vloeibaar omgerekend via 24 MJ/l [8].
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        ⚡ factor ×10 mogelijk – klik op 📄 PDF voor een volledig overzichtelijke rapportage (inclusief de nieuwe m³→kW tool)
+    </div>
+</div>
+
+<!-- Script voor alle berekeningen + PDF -->
+<script>
+(function() {
+    // ---------- brandstofconstanten voor rendement (η) ----------
+    const FUEL_CONST = {
+        aardgas:   { Kco2: 0.457, co2max: 11.7, name: "Aardgas/stadsgas" },
+        vloeibaar: { Kco2: 0.514, co2max: 14.0, name: "LPG (mengsel)" },
+        propaan:   { Kco2: 0.525, co2max: 13.8, name: "Propaan (C3H8)" },
+        butaan:    { Kco2: 0.535, co2max: 14.1, name: "Butaan (C4H10)" },
+        cokes:     { Kco2: 0.485, co2max: 10.0, name: "Cokegas" }
+    };
+
+    // ---------- 1. Gasdebit ----------
+    function updateVn() {
+        const Q = parseFloat(document.getElementById('qInput').value) || 0;
+        const eta = parseFloat(document.getElementById('etaInput1').value) || 0;
+        const Swn = parseFloat(document.getElementById('swnInput').value) || 0;
+        if (Q && eta && Swn && eta > 0) {
+            const Vn = Q / (Swn * (eta / 100));
+            document.getElementById('vnResult').innerText = Vn.toFixed(2);
+        } else {
+            document.getElementById('vnResult').innerText = '?';
+        }
+    }
+    document.getElementById('qInput').addEventListener('input', updateVn);
+    document.getElementById('etaInput1').addEventListener('input', updateVn);
+    document.getElementById('swnInput').addEventListener('input', updateVn);
+    updateVn();
+
+    // ---------- 2. Volume omrekening ----------
+    function atmosfeerDruk(hoogte) {
+        return 1013.25 * Math.exp(-hoogte / 8000);
+    }
+
+    function updateVb() {
+        const Vn = parseFloat(document.getElementById('vn2Input').value) || 0;
+        const tC = parseFloat(document.getElementById('tempInput').value) || 0;
+        const pGas = parseFloat(document.getElementById('pgasInput').value) || 0;
+        const h = parseFloat(document.getElementById('altInput').value) || 0;
+        const pAtm = atmosfeerDruk(h);
+        const pAbs = pAtm + pGas;
+        const Tn = 273.15;
+        const Tb = tC + 273.15;
+        const pn = 1013.25;
+
+        if (Vn && pAbs > 0) {
+            const Vb = Vn * (pn / pAbs) * (Tb / Tn);
+            document.getElementById('vbResult').innerText = Vb.toFixed(2);
+        } else {
+            document.getElementById('vbResult').innerText = '?';
+        }
+    }
+    document.getElementById('vn2Input').addEventListener('input', updateVb);
+    document.getElementById('tempInput').addEventListener('input', updateVb);
+    document.getElementById('pgasInput').addEventListener('input', updateVb);
+    document.getElementById('altInput').addEventListener('input', updateVb);
+    updateVb();
+
+    // ---------- 3. Gasverbruik per uur ----------
+    const vb3 = document.getElementById('vb3Input');
+    const volL = document.getElementById('volLiterInput');
+    const timeS = document.getElementById('timeSecInput');
+    const verbruikLabel = document.getElementById('verbruikLabel');
+    const verbruikResult = document.getElementById('verbruikResult');
+
+    function berekenTijd() {
+        const Vb = parseFloat(vb3.value) || 0;
+        const vol = parseFloat(volL.value) || 0;
+        if (Vb > 0 && vol > 0) {
+            const t = (vol * 3.6) / Vb;
+            timeS.value = t.toFixed(1);
+            verbruikLabel.innerText = 't =';
+            verbruikResult.innerText = t.toFixed(1) + ' s';
+        } else {
+            verbruikResult.innerText = '?';
+        }
+    }
+
+    function berekenVolume() {
+        const Vb = parseFloat(vb3.value) || 0;
+        const t = parseFloat(timeS.value) || 0;
+        if (Vb > 0 && t > 0) {
+            const vol = (Vb * t) / 3.6;
+            volL.value = vol.toFixed(0);
+            verbruikLabel.innerText = 'Volume =';
+            verbruikResult.innerText = vol.toFixed(0) + ' L';
+        } else {
+            verbruikResult.innerText = '?';
+        }
+    }
+
+    document.getElementById('calcTimeBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        berekenTijd();
+    });
+    document.getElementById('calcVolumeBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        berekenVolume();
+    });
+
+    vb3.addEventListener('input', function() {
+        if (verbruikLabel.innerText.includes('t =')) berekenTijd(); else berekenVolume();
+    });
+    volL.addEventListener('input', function() { if (verbruikLabel.innerText.includes('t =')) berekenTijd(); });
+    timeS.addEventListener('input', function() { if (verbruikLabel.innerText.includes('Volume =')) berekenVolume(); });
+    berekenTijd();
+
+    // ---------- 4. Verbrandingsrendement ----------
+    const fuelSelect = document.getElementById('fuelSelect');
+    const co2Radio = document.getElementById('co2Radio');
+    const o2Radio = document.getElementById('o2Radio');
+    const percInput = document.getElementById('percInput');
+    const dtInput = document.getElementById('dtInput');
+    const etaResult = document.getElementById('etaResult');
+
+    function berekenEta() {
+        const fuel = fuelSelect.value;
+        const isCo2 = co2Radio.checked;
+        const perc = parseFloat(percInput.value) || 0;
+        const dt = parseFloat(dtInput.value) || 0;
+        if (perc <= 0 || dt <= 0) {
+            etaResult.innerText = '?';
+            return;
+        }
+
+        let co2eq = perc;
+        if (!isCo2) {
+            const maxCo2 = FUEL_CONST[fuel].co2max;
+            co2eq = maxCo2 * (20.9 - perc) / 20.9;
+            if (co2eq < 0.1) co2eq = 0.1;
+        }
+
+        const K = FUEL_CONST[fuel].Kco2;
+        let verlies = dt * K / co2eq;
+        verlies = Math.min(30, Math.max(0, verlies));
+        let eta = 100 - verlies;
+        eta = Math.min(100, Math.max(0, eta));
+        etaResult.innerText = eta.toFixed(1);
+    }
+
+    fuelSelect.addEventListener('change', berekenEta);
+    co2Radio.addEventListener('change', berekenEta);
+    o2Radio.addEventListener('change', berekenEta);
+    percInput.addEventListener('input', berekenEta);
+    dtInput.addEventListener('input', berekenEta);
+    berekenEta();
+
+    function updateRadiosByFuel() {
+        const fuel = fuelSelect.value;
+        if (fuel === 'cokes') {
+            o2Radio.checked = true;
+            co2Radio.disabled = true;
+            document.querySelector('label[for="co2Radio"]').style.opacity = 0.5;
+        } else {
+            co2Radio.disabled = false;
+            document.querySelector('label[for="co2Radio"]').style.opacity = 1;
+        }
+        berekenEta();
+    }
+    fuelSelect.addEventListener('change', updateRadiosByFuel);
+    updateRadiosByFuel();
+
+    // ---------- 5. m³ naar kW conversie ----------
+    const gasVolumeInput = document.getElementById('gasVolumeInput');
+    const gasTypeSelect = document.getElementById('gasTypeSelect');
+    const efficiencyInput = document.getElementById('efficiencyInput');
+    const powerResult = document.getElementById('powerResult');
+
+    function updatePower() {
+        const volume = parseFloat(gasVolumeInput.value) || 0;
+        const type = gasTypeSelect.value;
+        const eff = parseFloat(efficiencyInput.value) || 100;
+        let kwhPerM3 = 0;
+
+        switch(type) {
+            case 'aardgas_10p55': kwhPerM3 = 10.55; break;
+            case 'aardgas_10p63': kwhPerM3 = 10.63; break;
+            case 'aardgas_10p1': kwhPerM3 = 10.1; break;
+            case 'propaan_26': kwhPerM3 = 26.0; break;
+            case 'butaan_28': kwhPerM3 = 28.0; break;
+            case 'lpg_26p1': kwhPerM3 = 26.1; break;
+            case 'lpg_24perliter': kwhPerM3 = 15.3; break;  // 24 MJ/l → 6,667 kWh/l, 1 liter vloeibaar ≈ 0,435 m³ gasvormig? 24/3.6 = 6,667 kWh/l, gedeeld door 0,435 ≈ 15,3
+            case 'cokes': kwhPerM3 = 5.0; break;
+            default: kwhPerM3 = 10.55;
+        }
+
+        const power = volume * kwhPerM3 * (eff / 100);
+        powerResult.innerText = power.toFixed(2) + ' kW';
+    }
+
+    gasVolumeInput.addEventListener('input', updatePower);
+    gasTypeSelect.addEventListener('input', updatePower);
+    efficiencyInput.addEventListener('input', updatePower);
+    updatePower();
+
+    // ---------- PDF RAPPORT ----------
+    document.getElementById('generatePDF').addEventListener('click', function() {
+        const Q = document.getElementById('qInput').value;
+        const eta1 = document.getElementById('etaInput1').value;
+        const Swn = document.getElementById('swnInput').value;
+        const vn = document.getElementById('vnResult').innerText;
+
+        const vn2 = document.getElementById('vn2Input').value;
+        const temp = document.getElementById('tempInput').value;
+        const pgas = document.getElementById('pgasInput').value;
+        const alt = document.getElementById('altInput').value;
+        const vb = document.getElementById('vbResult').innerText;
+
+        const vb3val = document.getElementById('vb3Input').value;
+        const volVal = document.getElementById('volLiterInput').value;
+        const timeVal = document.getElementById('timeSecInput').value;
+        const verbruikTekst = verbruikLabel.innerText + ' ' + verbruikResult.innerText;
+
+        const fuelTekst = fuelSelect.options[fuelSelect.selectedIndex].text;
+        const meting = co2Radio.checked ? 'CO₂' : 'O₂';
+        const perc = percInput.value;
+        const dt = dtInput.value;
+        const eta = etaResult.innerText;
+
+        // m³→kW waarden
+        const gasVol = gasVolumeInput.value;
+        const gasTypeTekst = gasTypeSelect.options[gasTypeSelect.selectedIndex].text;
+        const eff = efficiencyInput.value;
+        const power = powerResult.innerText;
+
+        const htmlContent = `
+            <html>
+            <head><title>Gasverbrandingsrapport</title>
+            <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f9ff; padding: 30px; }
+                .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 30px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+                h1 { color: #002b4a; border-bottom: 4px solid #0099cc; padding-bottom: 12px; }
+                h2 { color: #003b5c; margin-top: 35px; background: #e8f0f9; padding: 8px 20px; border-radius: 60px; font-weight: 400; }
+                table { width: 100%; border-collapse: collapse; margin: 15px 0; background: #f9fdff; border-radius: 20px; overflow: hidden; }
+                th { background: #002b4a; color: white; font-weight: 500; padding: 12px; text-align: left; }
+                td { padding: 12px; border-bottom: 1px solid #cbdae6; }
+                .value-cell { font-weight: 700; color: #002b4a; background: #e2eff9; border-radius: 40px; padding: 5px 15px; display: inline-block; }
+                .footer { margin-top: 40px; text-align: center; color: #2f556e; font-style: italic; }
+                .brandstof-label { font-size: 1.1rem; background: #def0e3; padding: 4px 18px; border-radius: 40px; display: inline-block; }
+                .explain-pdf { background: #f0f8ff; border-left: 4px solid #0099cc; padding: 10px; margin-bottom: 20px; border-radius: 8px; }
+                .print-instr { background: #fff2c0; padding: 15px; border-radius: 30px; text-align: center; font-size: 1.2rem; margin-bottom: 25px; border: 2px solid #f0b400; }
+            </style></head>
+            <body><div class="report-container">
+                <div class="print-instr">🖨️ Gebruik <strong>Ctrl+P</strong> om dit rapport als PDF op te slaan.</div>
+                <h1>⛽ Gasverbrandingsinstallatie — uitgebreid rapport</h1>
+                <p>Gegenereerd op ${new Date().toLocaleString('nl-NL')}</p>
+
+                <h2>1. Gasdebit Vₙ</h2>
+                <table><tr><th>Parameter</th><th>Waarde</th></tr>
+                <tr><td>Q</td><td>${Q} kW</td></tr><tr><td>η</td><td>${eta1} %</td></tr><tr><td>Swn</td><td>${Swn} kWh/m³</td></tr><tr><td>Vₙ</td><td><span class="value-cell">${vn} m³/h</span></td></tr></table>
+
+                <h2>2. Volume‑omrekening Vₙ→V<sub>B</sub></h2>
+                <table><tr><th>Parameter</th><th>Waarde</th></tr>
+                <tr><td>Vₙ</td><td>${vn2} m³/h</td></tr><tr><td>Temperatuur</td><td>${temp} °C</td></tr><tr><td>Overdruk</td><td>${pgas} mbar</td></tr><tr><td>Hoogte</td><td>${alt} m</td></tr><tr><td>V<sub>B</sub></td><td><span class="value-cell">${vb} m³/h</span></td></tr></table>
+
+                <h2>3. Gasverbruik per uur</h2>
+                <table><tr><th>Parameter</th><th>Waarde</th></tr>
+                <tr><td>V<sub>B</sub></td><td>${vb3val} m³/h</td></tr><tr><td>Volume</td><td>${volVal} L</td></tr><tr><td>Tijd</td><td>${timeVal} s</td></tr><tr><td>Resultaat</td><td><span class="value-cell">${verbruikTekst}</span></td></tr></table>
+
+                <h2>4. Verbrandingsrendement η</h2>
+                <table><tr><th>Parameter</th><th>Waarde</th></tr>
+                <tr><td>Brandstof</td><td><span class="brandstof-label">${fuelTekst}</span></td></tr>
+                <tr><td>Meting</td><td>${meting}</td></tr><tr><td>Percentage</td><td>${perc} %</td></tr><tr><td>Δt</td><td>${dt} K</td></tr><tr><td>η</td><td><span class="value-cell">${eta} %</span></td></tr></table>
+
+                <h2>5. m³ naar kW conversie</h2>
+                <table><tr><th>Parameter</th><th>Waarde</th></tr>
+                <tr><td>Volume</td><td>${gasVol} m³/h</td></tr>
+                <tr><td>Gassoort</td><td>${gasTypeTekst}</td></tr>
+                <tr><td>Rendement</td><td>${eff} %</td></tr>
+                <tr><td>Vermogen</td><td><span class="value-cell">${power}</span></td></tr></table>
+
+                <div class="footer">📐 o.b.v. Weissschaut / erkende bronnen</div>
+            </div>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('SW:', reg.scope))
+        .catch(err => console.error('SW error:', err));
+    });
+  }
+</script>
+</body></html>
+        `;
+
+        const printWindow = window.open('', '_blank', 'width=900,height=700');
+        if (!printWindow) { alert('Sta pop-ups toe voor deze site.'); return; }
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+    });
+})();
+</script>
+
+<!-- snelle voorbeeld-knoppen -->
+<div style="position: fixed; bottom: 20px; right: 20px; background: white; border-radius: 60px; padding: 8px 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 0.9rem; display: flex; gap: 10px; z-index: 999;">
+    <span style="color:#005a8c;">🧪 voorbeelden:</span>
+    <button onclick="document.getElementById('qInput').value=115; document.getElementById('etaInput1').value=90; document.getElementById('swnInput').value=9.8; document.getElementById('qInput').dispatchEvent(new Event('input'));" style="background: none; border: none; color: #0077aa; text-decoration: underline; cursor: pointer;">1</button>
+    <button onclick="document.getElementById('vn2Input').value=14; document.getElementById('tempInput').value=10; document.getElementById('pgasInput').value=25; document.getElementById('altInput').value=0; document.getElementById('vn2Input').dispatchEvent(new Event('input'));" style="background: none; border: none; color: #0077aa; text-decoration: underline; cursor: pointer;">2</button>
+    <button onclick="document.getElementById('vb3Input').value=15; document.getElementById('volLiterInput').value=300; document.getElementById('calcTimeBtn').click();" style="background: none; border: none; color: #0077aa; text-decoration: underline; cursor: pointer;">3</button>
+    <button onclick="document.getElementById('fuelSelect').value='propaan'; document.getElementById('co2Radio').checked=true; document.getElementById('percInput').value=13.2; document.getElementById('dtInput').value=140; document.getElementById('fuelSelect').dispatchEvent(new Event('change'));" style="background: none; border: none; color: #0077aa; text-decoration: underline; cursor: pointer;">4p</button>
+    <button onclick="document.getElementById('gasTypeSelect').value='propaan_26'; document.getElementById('gasVolumeInput').value=2.5; document.getElementById('gasVolumeInput').dispatchEvent(new Event('input'));" style="background: none; border: none; color: #0077aa; text-decoration: underline; cursor: pointer;">5 (propaan)</button>
+</div>
+</body>
+</html>
